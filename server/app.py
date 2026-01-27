@@ -1,9 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 from datetime import datetime
 import sqlite3
 import csv
-from flask import Response
-
 
 # ----------------------
 # CONFIG
@@ -12,6 +10,7 @@ CARBON_BUDGET = 5000  # kg CO2
 CO2_FACTOR = 0.82
 POWER_WATT = 150
 DB_PATH = "greenops.db"
+COST_PER_KWH = 8  # INR per kWh
 
 DEMO_DATA = [
     {"pc_id": "PC-01", "idle_minutes": 25, "action": "SLEEP"},
@@ -42,15 +41,18 @@ def init_db():
 init_db()
 
 # ----------------------
-# DASHBOARD (READ FROM DB)
+# DASHBOARD
 # ----------------------
 @app.route("/")
 def dashboard():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-    cur.execute(
-        "SELECT pc_id, idle_minutes, action FROM agent_logs ORDER BY id DESC LIMIT 10"
-    )
+    cur.execute("""
+        SELECT pc_id, idle_minutes, action
+        FROM agent_logs
+        ORDER BY id DESC
+        LIMIT 10
+    """)
     rows = cur.fetchall()
     conn.close()
 
@@ -59,32 +61,32 @@ def dashboard():
         for r in rows
     ]
 
-    # fallback demo data if DB empty
     if not logs:
         logs = DEMO_DATA
 
     total_idle = sum(log["idle_minutes"] for log in logs)
-
     energy = (POWER_WATT * (total_idle / 60)) / 1000
     co2 = energy * CO2_FACTOR
     remaining = CARBON_BUDGET - co2
+    money_saved = energy * COST_PER_KWH
 
     optimized = len([l for l in logs if l["action"] == "SLEEP"])
     active = len([l for l in logs if l["action"] == "NONE"])
 
     return render_template(
-        "dashboard.html",
-        energy=round(energy, 2),
-        co2=round(co2, 2),
-        remaining=round(remaining, 2),
-        used=round(co2, 2),
-        optimized=optimized,
-        active=active,
-        logs=logs
-    )
+    "dashboard.html",
+    energy=round(energy, 2),
+    co2=round(co2, 2),
+    remaining=round(remaining, 2),
+    used=round(co2, 2),
+    optimized=optimized,
+    active=active,
+    money_saved=round(money_saved, 2),
+    logs=logs
+)
 
 # ----------------------
-# AGENT API (WRITE TO DB)
+# AGENT API
 # ----------------------
 @app.route("/agent/report", methods=["POST"])
 def agent_report():
@@ -107,17 +109,12 @@ def agent_report():
     return {"status": "ok"}
 
 # ----------------------
-# START SERVER
+# CSV EXPORT
 # ----------------------
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
-
 @app.route("/export/csv")
 def export_csv():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-
     cur.execute("""
         SELECT pc_id, idle_minutes, action, timestamp
         FROM agent_logs
@@ -138,4 +135,10 @@ def export_csv():
             "Content-Disposition": "attachment; filename=greenops_logs.csv"
         }
     )
+
+# ----------------------
+# START SERVER
+# ----------------------
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 

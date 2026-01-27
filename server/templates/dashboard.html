@@ -1,21 +1,145 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GreenOps Dashboard</title>
+    <title>GreenOps Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 30px;
+            color: #1f2933;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background: #22c55e;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .card p {
+            margin: 5px 0 0;
+            color: #475569;
+        }
+
+        .bar-container {
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .bar {
+            height: 14px;
+            background: #16a34a;
+            width: {{ (used / 5000) * 100 }}%;
+        }
+
+        table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+        }
+    </style>
 </head>
 <body>
-    <h1>GreenOps is running ✅</h1>
 
-    <p><strong>Energy:</strong> {{ energy }} kWh</p>
-    <p><strong>CO₂:</strong> {{ co2 }} kg</p>
-    <p><strong>Remaining Budget:</strong> {{ remaining }} kg</p>
+<div class="header">
+    <h1>GreenOps – Carbon Governance Dashboard</h1>
+    <div class="badge">DEMO MODE</div>
+</div>
 
-    <h3>Recent Agent Logs</h3>
-    <ul>
-        {% for log in logs %}
-            <li>{{ log.pc_id }} — {{ log.idle_minutes }} min — {{ log.action }}</li>
-        {% endfor %}
-    </ul>
+<div class="cards">
+    <div class="card">
+        <h2>{{ optimized }}</h2>
+        <p>Systems Optimized</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ active }}</h2>
+        <p>Systems Active</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ energy }} kWh</h2>
+        <p>Energy Estimated</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ co2 }} kg</h2>
+        <p>CO₂ Emissions</p>
+    </div>
+</div>
+
+<div class="card" style="margin-top:25px;">
+    <h3>Carbon Budget Usage</h3>
+    <p>{{ used }} kg used / 5000 kg monthly budget</p>
+    <div class="bar-container">
+        <div class="bar"></div>
+    </div>
+    <p style="margin-top:8px;"><strong>Remaining:</strong> {{ remaining }} kg</p>
+</div>
+
+<table>
+    <tr>
+        <th>System</th>
+        <th>Idle Time</th>
+        <th>Action</th>
+        <th>Reason</th>
+    </tr>
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.pc_id }}</td>
+        <td>{{ log.idle_minutes }} min</td>
+        <td>{{ log.action }}</td>
+        <td>
+            {% if log.action == "SLEEP" %}
+                Idle exceeded policy threshold
+            {% else %}
+                Within allowed activity window
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
 </body>
 </html>
 

@@ -1,6 +1,12 @@
 from flask import Flask, request, render_template
 from datetime import datetime
 
+DEMO_DATA = [
+    {"pc_id": "PC-01", "idle_minutes": 25, "action": "SLEEP"},
+    {"pc_id": "PC-02", "idle_minutes": 10, "action": "NONE"},
+    {"pc_id": "PC-03", "idle_minutes": 45, "action": "SLEEP"},
+]
+
 app = Flask(__name__)
 
 AGENT_LOGS = []
@@ -10,7 +16,9 @@ POWER_WATT = 150
 
 @app.route("/")
 def dashboard():
-    total_idle = sum(log["idle_minutes"] for log in AGENT_LOGS)
+    data = AGENT_LOGS if AGENT_LOGS else DEMO_DATA
+
+    total_idle = sum(item["idle_minutes"] for item in data)
     energy = (POWER_WATT * (total_idle / 60)) / 1000
     co2 = energy * CO2_FACTOR
     remaining = CARBON_BUDGET - co2
@@ -20,8 +28,9 @@ def dashboard():
         energy=round(energy, 2),
         co2=round(co2, 2),
         remaining=round(remaining, 2),
-        logs=AGENT_LOGS[-10:]
+        logs=data
     )
+
 
 @app.route("/agent/report", methods=["POST"])
 def agent_report():

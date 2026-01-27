@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GreenOps Dashboard</title>
+</head>
+<body>
+    <h1>GreenOps is running ✅</h1>
+
+    <p><strong>Energy:</strong> {{ energy }} kWh</p>
+    <p><strong>CO₂:</strong> {{ co2 }} kg</p>
+    <p><strong>Remaining Budget:</strong> {{ remaining }} kg</p>
+
+    <h3>Recent Agent Logs</h3>
+    <ul>
+        {% for log in logs %}
+            <li>{{ log.pc_id }} — {{ log.idle_minutes }} min — {{ log.action }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+

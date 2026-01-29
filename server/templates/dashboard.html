@@ -1,245 +1,762 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>GreenOps Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenOps - Carbon Governance Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            padding: 30px;
-            color: #1f2933;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
+        :root {
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --secondary: #2563eb;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --bg-main: #f4f6f8;
+            --bg-card: #ffffff;
+            --text-primary: #1f2933;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e5e7eb;
+            --shadow: 0 4px 10px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
         .header {
+            background: var(--bg-card);
+            padding: 20px 40px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .badge {
-            background: #22c55e;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .cards {
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: -5px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge.demo {
+            background: var(--warning);
+        }
+
+        .badge.live {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        /* KPI Cards */
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 25px;
+            margin-bottom: 30px;
         }
 
         .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
         }
 
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card.highlight {
+            border-left: 6px solid var(--primary);
+        }
+
+        .card.warning {
+            border-left: 6px solid var(--warning);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .card-icon.green { background: #dcfce7; color: var(--primary); }
+        .card-icon.blue { background: #dbeafe; color: var(--secondary); }
+        .card-icon.orange { background: #fed7aa; color: var(--warning); }
+        .card-icon.red { background: #fee2e2; color: var(--danger); }
+
         .card h2 {
-            margin: 0;
-            font-size: 26px;
+            font-size: 36px;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--text-primary);
         }
 
         .card p {
-            margin: 5px 0 0;
-            color: #475569;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .card-trend.up { color: var(--success); }
+        .card-trend.down { color: var(--danger); }
+
+        /* Carbon Budget Section */
+        .budget-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .budget-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .budget-info {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .budget-stat {
+            flex: 1;
+        }
+
+        .budget-stat label {
+            color: var(--text-muted);
+            font-size: 13px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .budget-stat .value {
+            font-size: 28px;
+            font-weight: 700;
         }
 
         .bar-container {
             background: #e5e7eb;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
-            margin-top: 10px;
+            height: 20px;
+            position: relative;
         }
 
         .bar {
-            height: 14px;
-            background: #16a34a;
-            width: {{ (used / 5000) * 100 }}%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .bar.warning {
+            background: linear-gradient(90deg, var(--warning), #ea580c);
+        }
+
+        .bar.danger {
+            background: linear-gradient(90deg, var(--danger), #dc2626);
+        }
+
+        .bar-label {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Systems Status */
+        .systems-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .systems-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .systems-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .systems-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .system-stat {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-main);
+            border-radius: 8px;
+        }
+
+        .system-stat .number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .system-stat .label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Recent Activity Table */
+        .table-container {
+            overflow-x: auto;
         }
 
         table {
-            margin-top: 30px;
             width: 100%;
             border-collapse: collapse;
-            background: white;
         }
 
         th, td {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 14px 16px;
             text-align: left;
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            background: #f1f5f9;
+            background: var(--bg-main);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
         }
 
-	.subtitle {
-    margin-top: -8px;
-    color: #94a3b8;
-    font-size: 14px;
-}
+        tr:hover {
+            background: #f9fafb;
+        }
 
-.section {
-    margin-top: 30px;
-}
+        .tag {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
 
-.highlight {
-    border-left: 6px solid #22c55e;
-}
+        .tag.sleep {
+            background: #dcfce7;
+            color: #166534;
+        }
 
-.muted {
-    color: #64748b;
-    font-size: 14px;
-}
+        .tag.active {
+            background: #e5e7eb;
+            color: #374151;
+        }
 
-.remaining {
-    margin-top: 10px;
-}
+        .tag.hibernate {
+            background: #dbeafe;
+            color: #1e40af;
+        }
 
-.actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+        /* Actions Card */
+        .actions-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
 
-.btn {
-    padding: 10px 18px;
-    background: #2563eb;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-}
+        .actions-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
 
-.btn:hover {
-    background: #1d4ed8;
-}
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.table-container {
-    margin-top: 30px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
 
-.tag {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-}
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
 
-.tag.sleep {
-    background: #dcfce7;
-    color: #166534;
-}
+        .btn-primary {
+            background: var(--secondary);
+        }
 
-.tag.active {
-    background: #e5e7eb;
-    color: #374151;
-}
+        .btn-success {
+            background: var(--success);
+        }
 
+        .btn-secondary {
+            background: var(--text-secondary);
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: var(--bg-main);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-item .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .stat-item .value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .budget-info {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card, .budget-card, .systems-card, .actions-card {
+            animation: fadeIn 0.5s ease-out;
+        }
     </style>
 </head>
-
 <body>
-
-<div class="header">
-    <div>
-        <h1>GreenOps</h1>
-        <p class="subtitle">Carbon Governance Dashboard</p>
-    </div>
-    <div class="badge">DEMO MODE</div>
-</div>
-
-<!-- KPI CARDS -->
-<div class="cards">
-    <div class="card highlight">
-        <h2>{{ optimized }}</h2>
-        <p>Systems Optimized</p>
-    </div>
-
-    <div class="card">
-        <h2>{{ active }}</h2>
-        <p>Systems Active</p>
-    </div>
-
-    <div class="card">
-        <h2>{{ energy }} kWh</h2>
-        <p>Energy Estimated</p>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div>
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    GreenOps
+                </div>
+                <p class="subtitle">Carbon Governance Dashboard v2.0</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="badge {% if demo_mode %}demo{% else %}live{% endif %}">
+                <i class="fas fa-circle"></i>
+                {% if demo_mode %}DEMO MODE{% else %}LIVE{% endif %}
+            </div>
+            <div class="badge">
+                <i class="fas fa-desktop"></i>
+                {{ online_systems }}/{{ total_systems }} Online
+            </div>
+        </div>
     </div>
 
-    <div class="card">
-        <h2>{{ co2 }} kg</h2>
-        <p>CO₂ Emissions</p>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- KPI Cards -->
+        <div class="cards-grid">
+            <div class="card highlight">
+                <div class="card-header">
+                    <div class="card-icon green">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                </div>
+                <h2>{{ optimized }}</h2>
+                <p>Systems Optimized</p>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+12% this week</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon blue">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+                <h2>{{ energy }}</h2>
+                <p>kWh Saved</p>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+8% this week</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon orange">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                </div>
+                <h2>{{ co2 }}</h2>
+                <p>kg CO₂ Prevented</p>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+15% this week</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon green">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                </div>
+                <h2>₹{{ money_saved }}</h2>
+                <p>Cost Savings</p>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+10% this week</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carbon Budget -->
+        <div class="budget-card">
+            <div class="budget-header">
+                <h3><i class="fas fa-chart-pie"></i> Carbon Budget Status</h3>
+            </div>
+            
+            <div class="budget-info">
+                <div class="budget-stat">
+                    <label>Used</label>
+                    <div class="value" style="color: var(--primary);">{{ used }} kg</div>
+                </div>
+                <div class="budget-stat">
+                    <label>Remaining</label>
+                    <div class="value" style="color: var(--secondary);">{{ remaining }} kg</div>
+                </div>
+                <div class="budget-stat">
+                    <label>Monthly Budget</label>
+                    <div class="value" style="color: var(--text-muted);">5000 kg</div>
+                </div>
+            </div>
+
+            <div class="bar-container">
+                <div class="bar {% if budget_percentage > 90 %}danger{% elif budget_percentage > 75 %}warning{% endif %}" 
+                     style="width: {{ budget_percentage }}%;">
+                    <span class="bar-label">{{ budget_percentage }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+            <!-- Systems Status & Activity -->
+            <div class="systems-card">
+                <div class="systems-header">
+                    <h3><i class="fas fa-server"></i> Recent System Activity</h3>
+                    <span style="color: var(--text-muted); font-size: 13px;">
+                        <i class="fas fa-clock"></i> Last updated: Just now
+                    </span>
+                </div>
+
+                <div class="systems-stats">
+                    <div class="system-stat">
+                        <div class="number" style="color: var(--success);">{{ active }}</div>
+                        <div class="label">Active</div>
+                    </div>
+                    <div class="system-stat">
+                        <div class="number" style="color: var(--warning);">{{ total_systems - active - optimized }}</div>
+                        <div class="label">Idle</div>
+                    </div>
+                    <div class="system-stat">
+                        <div class="number" style="color: var(--secondary);">{{ optimized }}</div>
+                        <div class="label">Sleeping</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>System</th>
+                                <th>Idle Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-desktop" style="color: var(--text-muted);"></i>
+                                    <strong>{{ log.pc_id }}</strong>
+                                </td>
+                                <td>{{ log.idle_minutes }} min</td>
+                                <td>
+                                    {% if log.action == 'SLEEP' %}
+                                        <span class="tag sleep">
+                                            <i class="fas fa-moon"></i> Sleeping
+                                        </span>
+                                    {% elif log.action == 'HIBERNATE' %}
+                                        <span class="tag hibernate">
+                                            <i class="fas fa-snowflake"></i> Hibernated
+                                        </span>
+                                    {% else %}
+                                        <span class="tag active">
+                                            <i class="fas fa-circle"></i> Active
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td style="font-size: 13px; color: var(--text-muted);">
+                                    {% if log.action == "SLEEP" %}
+                                        Idle exceeded policy threshold
+                                    {% else %}
+                                        Within allowed activity window
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Actions & Quick Stats -->
+            <div>
+                <div class="actions-card" style="margin-bottom: 20px;">
+                    <h3><i class="fas fa-tools"></i> Quick Actions</h3>
+                    <div class="action-buttons">
+                        <a href="/api/v1/export/csv?period=30d" class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                            Download Report (CSV)
+                        </a>
+                        <button class="btn btn-success" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewAnalytics()">
+                            <i class="fas fa-chart-line"></i>
+                            View Analytics
+                        </button>
+                    </div>
+                </div>
+
+                <div class="actions-card">
+                    <h3><i class="fas fa-info-circle"></i> Summary</h3>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <div class="label">Trees Equivalent</div>
+                            <div class="value">{{ (co2 / 21) | round(1) }}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="label">Cars Off Road (days)</div>
+                            <div class="value">{{ (co2 / 4.6) | round(1) }}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="label">Avg. Savings/System</div>
+                            <div class="value">₹{{ (money_saved / (total_systems if total_systems > 0 else 1)) | round(2) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- CARBON BUDGET -->
-<div class="card section">
-    <h3>Carbon Budget Status</h3>
-    <p class="muted">{{ used }} kg used out of 5000 kg monthly budget</p>
-
-    <div class="bar-container">
-        <div class="bar"></div>
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2026 GreenOps. Making IT infrastructure sustainable, one system at a time.</p>
+        <p style="margin-top: 5px;">
+            <a href="https://github.com/yourusername/greenops" style="color: var(--primary);">
+                <i class="fab fa-github"></i> GitHub
+            </a> |
+            <a href="/api/v1/docs" style="color: var(--primary);">
+                <i class="fas fa-book"></i> API Docs
+            </a> |
+            <a href="/health" style="color: var(--primary);">
+                <i class="fas fa-heartbeat"></i> System Health
+            </a>
+        </p>
     </div>
 
-    <p class="remaining">
-        Remaining Budget: <strong>{{ remaining }} kg</strong>
-    </p>
-</div>
+    <script>
+        function refreshData() {
+            location.reload();
+        }
 
-<!-- ACTIONS -->
-<div class="card section actions">
-    <h3>Actions</h3>
-    <a href="/export/csv" class="btn">
-        Download CSV Report
-    </a>
-</div>
+        function viewAnalytics() {
+            alert('Analytics feature coming soon! This will show detailed trends and insights.');
+        }
 
-<!-- TABLE -->
-<div class="table-container">
-    <h3>Recent System Activity</h3>
-    <table>
-        <tr>
-            <th>System</th>
-            <th>Idle Time</th>
-            <th>Action</th>
-            <th>Reason</th>
-        </tr>
-        {% for log in logs %}
-        <tr>
-            <td>{{ log.pc_id }}</td>
-            <td>{{ log.idle_minutes }} min</td>
-            <td>
-                <span class="tag {% if log.action == 'SLEEP' %}sleep{% else %}active{% endif %}">
-                    {{ log.action }}
-                </span>
-            </td>
-            <td>
-                {% if log.action == "SLEEP" %}
-                    Idle exceeded policy threshold
-                {% else %}
-                    Within allowed activity window
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <div class="card highlight">
-    <h2>₹ {{ money_saved }}</h2>
-    <p>Estimated Cost Saved</p>
-</div>
-
-</div>
-
+        // Auto-refresh every 60 seconds
+        setTimeout(() => {
+            location.reload();
+        }, 60000);
+    </script>
 </body>
-
 </html>
-

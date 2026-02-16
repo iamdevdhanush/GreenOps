@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+gunicorn
+psycopg2-binary
+python-dotenv
+passlib[bcrypt]
+python-jose
+Flask
+flask-cors
+gunicorn
+psycopg2-binary
+python-dotenv
+

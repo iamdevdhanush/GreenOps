@@ -68,7 +68,7 @@ The agent will:
 
 ```
 ┌──────────────┐         ┌──────────────────────┐         ┌─────────────┐
-│  Agent       │────────▶│  Server (Flask)    │◀────────│  Dashboard  │
+│  Agent       │────────▶│  Server (FastAPI)    │◀────────│  Dashboard  │
 │  (Python)    │         │  + PostgreSQL        │         │  (Web)      │
 └──────────────┘         └──────────────────────┘         └─────────────┘
    Multiple               Authentication                   Real-time
@@ -80,7 +80,7 @@ The agent will:
 ### Components
 
 **Server:**
-- Flask web framework
+- FastAPI web framework
 - PostgreSQL database (ACID compliance)
 - JWT authentication (admin)
 - Token authentication (agents)

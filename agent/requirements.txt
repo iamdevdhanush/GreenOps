@@ -1,2 +1,5 @@
+# GreenOps Agent Dependencies
 requests==2.31.0
 
+# Optional: For advanced idle detection on Linux
+# python-xlib==0.33  # Uncomment if needed

@@ -1,12 +1,12 @@
 #!/bin/bash
 echo "🚀 Starting GreenOps Server..."
-docker-compose up -d
+sudo docker-compose up -d
 echo ""
 echo "⏳ Waiting for services to be ready..."
 sleep 30
 echo ""
 echo "📊 Service Status:"
-docker-compose ps
+sudo docker-compose ps
 echo ""
 echo "🔍 Testing server health..."
 curl -s http://localhost:8000/health | python3 -m json.tool

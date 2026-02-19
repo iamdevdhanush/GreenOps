@@ -1,4 +1,22 @@
+# GreenOps — Docker Compose
+# ─────────────────────────────────────────────────────────────────────────────
+# Start order:
+#   db (healthy) → server (gunicorn on_starting waits for pg) → nginx
+#
+# The `sleep 3` that was previously in the server command has been removed.
+# It was both fragile (too short on slow hardware / first-run migrations) and
+# redundant — gunicorn's on_starting() hook retries the PostgreSQL connection
+# for up to 60 s before giving up.
+#
+# depends_on: service_healthy ensures the PostgreSQL process is accepting
+# connections (pg_isready) before Docker even starts the server container.
+# on_starting() in gunicorn.conf.py provides a second layer of defence in
+# case the database is still running its docker-entrypoint-initdb.d scripts.
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────────────────────
   db:
     image: postgres:15-alpine
     container_name: greenops-db
@@ -10,16 +28,22 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Both migration files are mounted here.  PostgreSQL runs ALL *.sql files
+      # in this directory alphabetically on first-volume initialisation only.
       - ./migrations:/docker-entrypoint-initdb.d
     ports:
-      - "5433:5432"
+      - "5433:5432"   # 5433 on host to avoid conflicts with local postgres
     healthcheck:
+      # pg_isready -d greenops: checks that the 'greenops' database is
+      # accepting connections, not just that the postgres daemon is running.
       test: ["CMD-SHELL", "pg_isready -U greenops -d greenops"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 12      # 60 s total — enough for first-run schema init
+      start_period: 10s
     restart: unless-stopped
 
+  # ── GreenOps Server ────────────────────────────────────────────────────────
   server:
     build:
       context: .
@@ -33,15 +57,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./logs:/app/logs
+      - ./logs:/app/logs    # persist gunicorn / app logs on the host
+    # No inline command override — the Dockerfile CMD is used as-is.
+    # gunicorn.conf.py's on_starting() handles the DB-readiness wait.
     restart: unless-stopped
-    command: >
-      sh -c "
-      echo 'Waiting for DB...' &&
-      sleep 3 &&
-      gunicorn -c gunicorn.conf.py server.main:app
-      "
 
+  # ── Nginx (dashboard + API reverse proxy) ──────────────────────────────────
   nginx:
     image: nginx:alpine
     container_name: greenops-nginx
@@ -56,4 +77,3 @@ services:
 
 volumes:
   postgres_data:
-

@@ -1,24 +1,50 @@
+# GreenOps Server — Dockerfile
+# ─────────────────────────────────────────────────────────────────────────────
+# PYTHONUNBUFFERED=1  — flush stdout/stderr immediately so log lines are never
+#                       swallowed when the container crashes.  Without this,
+#                       Python's C-level buffering can hold the last few log
+#                       lines in memory and Docker never sees them.
+# ─────────────────────────────────────────────────────────────────────────────
 FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    curl \
+# System dependencies: postgresql-client for pg_isready / psql; curl for the
+# Docker health check.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        postgresql-client \
+        curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Python dependencies before copying application code so Docker layer
+# caching keeps pip runs fast on code-only changes.
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY server/ ./server/
-COPY migrations/ ./migrations/
+# Application source
+COPY server/      ./server/
+COPY migrations/  ./migrations/
 COPY gunicorn.conf.py .
 
+# Pre-create the log directory so RotatingFileHandler can always open its file
+# even before the bind-mount from docker-compose is attached.
 RUN mkdir -p /app/logs
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
+# Health check: hits the /health endpoint which performs a lightweight
+# SELECT 1 against the DB pool.
+# --start-period: give the container time to complete DB pool init and any
+#                 first-boot admin-password update before counts start.
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=5s \
+    --start-period=60s \
+    --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "server.main:app"]
+# gunicorn.conf.py is in /app; gunicorn looks for it in the working directory.
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "server.main:app"]

@@ -290,3 +290,45 @@ psycopg2.OperationalError: server closed the connection unexpectedly
 2026-02-19 18:01:07,229 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
 2026-02-19 18:02:07,300 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
 2026-02-19 18:03:00,027 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:22:12,365 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-19 18:22:12,458 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:22:12,467 server.database INFO Database connectivity verified.
+2026-02-19 18:22:12,484 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-19 18:22:13,016 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-19 18:22:13,023 server.main INFO Offline checker started (interval=60s, pid=1, thread=offline-check).
+2026-02-19 18:22:13,025 server.main INFO GreenOps server initialised and ready.
+2026-02-19 18:22:13,234 server.database INFO Database pool closed.
+2026-02-19 18:22:13,331 server.database INFO Database pool closed.
+2026-02-19 18:22:13,367 server.database INFO Database pool closed.
+2026-02-19 18:22:13,360 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:22:13,404 server.database INFO Database connectivity verified.
+2026-02-19 18:22:13,424 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:22:13,440 server.database INFO Database connectivity verified.
+2026-02-19 18:22:13,443 server.database INFO Database pool closed.
+2026-02-19 18:22:13,446 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:22:13,452 server.database INFO Database connectivity verified.
+2026-02-19 18:22:13,483 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:22:13,491 server.database INFO Database connectivity verified.
+2026-02-19 18:23:13,371 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-19 18:23:13,373 server.main ERROR Offline check error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "/app/server/main.py", line 145, in _loop
+    count = MachineService.update_offline_machines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/server/services/machine.py", line 248, in update_offline_machines
+    updated = db.execute_query(
+              ^^^^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 125, in execute_query
+    cur.execute(query, params)
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+

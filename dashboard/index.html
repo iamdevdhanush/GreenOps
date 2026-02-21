@@ -4,70 +4,298 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GreenOps — Infrastructure Control</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
 <div id="app">
 
-  <!-- LOGIN -->
+  <!-- ── LOGIN ── -->
   <div id="login-screen" class="screen active">
-    <div class="auth-card">
-      <h1 class="brand">GreenOps</h1>
-      <p class="auth-sub">Secure Infrastructure Monitoring</p>
-
-      <form id="login-form">
-        <input id="username" placeholder="Username" required />
-        <input id="password" type="password" placeholder="Password" required />
-        <div id="login-error" class="error hidden"></div>
-        <button class="btn-primary full">Sign In</button>
-      </form>
+    <div class="login-bg">
+      <div class="login-orb login-orb-1"></div>
+      <div class="login-orb login-orb-2"></div>
+      <div class="login-grid"></div>
+    </div>
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity="0.15"/>
+              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity="0.4"/>
+            </svg>
+          </div>
+          <span class="logo-text">GreenOps</span>
+        </div>
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-sub">Sign in to your infrastructure dashboard</p>
+        <form id="login-form" autocomplete="off">
+          <div class="field-group">
+            <label class="field-label">Username</label>
+            <div class="field-wrap">
+              <i data-lucide="user" class="field-icon"></i>
+              <input id="username" type="text" placeholder="admin" autocomplete="username" required />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Password</label>
+            <div class="field-wrap">
+              <i data-lucide="lock" class="field-icon"></i>
+              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+            </div>
+          </div>
+          <div id="login-error" class="form-error hidden">
+            <i data-lucide="alert-circle"></i>
+            <span id="login-error-text"></span>
+          </div>
+          <button type="submit" class="btn-submit" id="login-btn">
+            <span class="btn-text">Sign In</span>
+            <span class="btn-spinner hidden">
+              <svg class="spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/>
+              </svg>
+            </span>
+            <i data-lucide="arrow-right" class="btn-icon"></i>
+          </button>
+        </form>
+        <p class="auth-footer">GreenOps v2.0 &mdash; Green IT Monitoring</p>
+      </div>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- ── CHANGE PASSWORD ── -->
+  <div id="change-pw-screen" class="screen">
+    <div class="login-bg">
+      <div class="login-orb login-orb-1"></div>
+      <div class="login-orb login-orb-2"></div>
+    </div>
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity="0.15"/>
+              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity="0.4"/>
+            </svg>
+          </div>
+          <span class="logo-text">GreenOps</span>
+        </div>
+        <div class="pw-badge">
+          <i data-lucide="shield-alert"></i>
+          Security Update Required
+        </div>
+        <h1 class="auth-title">Set new password</h1>
+        <p class="auth-sub">Your account requires a password change before continuing.</p>
+        <form id="change-pw-form">
+          <div class="field-group">
+            <label class="field-label">Current Password</label>
+            <div class="field-wrap">
+              <i data-lucide="lock" class="field-icon"></i>
+              <input id="cur-pw" type="password" placeholder="Current password" required />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">New Password</label>
+            <div class="field-wrap">
+              <i data-lucide="key" class="field-icon"></i>
+              <input id="new-pw" type="password" placeholder="Min. 8 characters" required />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Confirm New Password</label>
+            <div class="field-wrap">
+              <i data-lucide="check-circle" class="field-icon"></i>
+              <input id="confirm-pw" type="password" placeholder="Repeat new password" required />
+            </div>
+          </div>
+          <div id="change-pw-error" class="form-error hidden">
+            <i data-lucide="alert-circle"></i>
+            <span id="change-pw-error-text"></span>
+          </div>
+          <button type="submit" class="btn-submit">
+            <span class="btn-text">Update Password</span>
+            <span class="btn-spinner hidden">
+              <svg class="spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/>
+              </svg>
+            </span>
+            <i data-lucide="arrow-right" class="btn-icon"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
   <div id="dashboard-screen" class="screen">
     <aside class="sidebar">
-      <div class="logo">GreenOps</div>
-      <button id="logout-btn" class="btn-ghost">Logout</button>
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-mark">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity="0.15"/>
+              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity="0.4"/>
+            </svg>
+          </div>
+          <span>GreenOps</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Monitoring</div>
+        <a class="nav-item active" href="#">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" href="#">
+          <i data-lucide="monitor"></i>
+          <span>Machines</span>
+        </a>
+        <a class="nav-item" href="#">
+          <i data-lucide="zap"></i>
+          <span>Energy</span>
+        </a>
+
+        <div class="nav-section-label" style="margin-top:24px">System</div>
+        <a class="nav-item" href="#">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user-row">
+          <div class="user-avatar">
+            <span id="sidebar-user-initial">A</span>
+          </div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user">admin</div>
+            <div class="user-role">Administrator</div>
+          </div>
+          <button id="logout-btn" class="logout-btn" title="Sign out">
+            <i data-lucide="log-out"></i>
+          </button>
+        </div>
+      </div>
     </aside>
 
-    <main class="main">
+    <main class="main-content">
+      <!-- Topbar -->
       <header class="topbar">
-        <div>
-          <h1>Dashboard</h1>
-          <span class="sub">Live Infrastructure Overview</span>
+        <div class="topbar-left">
+          <h1 class="page-title">Infrastructure Overview</h1>
+          <div class="breadcrumb">
+            <span>GreenOps</span>
+            <i data-lucide="chevron-right" style="width:14px;height:14px;opacity:.4"></i>
+            <span class="breadcrumb-current">Dashboard</span>
+          </div>
         </div>
-        <button id="refresh-btn" class="btn-ghost small">Refresh</button>
+        <div class="topbar-right">
+          <div class="refresh-status" id="refresh-status">
+            <span class="refresh-dot"></span>
+            <span class="refresh-label">Live</span>
+          </div>
+          <button id="refresh-btn" class="btn-icon-only" title="Refresh now">
+            <i data-lucide="refresh-cw"></i>
+          </button>
+        </div>
       </header>
 
-      <section class="stats" id="stats">
-        <div class="stat">
-          <div class="stat-value" id="stat-total">—</div>
-          <div class="stat-label">Machines</div>
+      <!-- Stats Row -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-icon-wrap stat-icon-neutral">
+              <i data-lucide="server"></i>
+            </div>
+            <div class="stat-data">
+              <div class="stat-value" id="stat-total">—</div>
+              <div class="stat-label">Total Machines</div>
+            </div>
+          </div>
         </div>
-        <div class="stat online">
-          <div class="stat-value" id="stat-online">—</div>
-          <div class="stat-label">Online</div>
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-icon-wrap stat-icon-online">
+              <i data-lucide="wifi"></i>
+            </div>
+            <div class="stat-data">
+              <div class="stat-value stat-online" id="stat-online">—</div>
+              <div class="stat-label">Online</div>
+            </div>
+          </div>
+          <div class="stat-bar stat-bar-online" id="bar-online" style="width:0%"></div>
         </div>
-        <div class="stat idle">
-          <div class="stat-value" id="stat-idle">—</div>
-          <div class="stat-label">Idle</div>
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-icon-wrap stat-icon-idle">
+              <i data-lucide="coffee"></i>
+            </div>
+            <div class="stat-data">
+              <div class="stat-value stat-idle" id="stat-idle">—</div>
+              <div class="stat-label">Idle</div>
+            </div>
+          </div>
+          <div class="stat-bar stat-bar-idle" id="bar-idle" style="width:0%"></div>
         </div>
-        <div class="stat offline">
-          <div class="stat-value" id="stat-offline">—</div>
-          <div class="stat-label">Offline</div>
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-icon-wrap stat-icon-offline">
+              <i data-lucide="wifi-off"></i>
+            </div>
+            <div class="stat-data">
+              <div class="stat-value stat-offline" id="stat-offline">—</div>
+              <div class="stat-label">Offline</div>
+            </div>
+          </div>
+          <div class="stat-bar stat-bar-offline" id="bar-offline" style="width:0%"></div>
+        </div>
+        <div class="stat-card stat-card-energy">
+          <div class="stat-card-inner">
+            <div class="stat-icon-wrap stat-icon-energy">
+              <i data-lucide="zap"></i>
+            </div>
+            <div class="stat-data">
+              <div class="stat-value" id="stat-energy">—</div>
+              <div class="stat-label">Energy Wasted</div>
+            </div>
+          </div>
+          <div class="stat-sub" id="stat-cost">— cost</div>
         </div>
       </section>
 
-      <section id="machine-grid" class="grid"></section>
+      <!-- Controls -->
+      <div class="controls-row">
+        <div class="search-wrap">
+          <i data-lucide="search" class="search-icon"></i>
+          <input id="search-input" type="text" placeholder="Search machines, OS, MAC address…" class="search-input" />
+        </div>
+        <div class="filter-pills">
+          <button class="pill active" data-status="">All</button>
+          <button class="pill" data-status="online">Online</button>
+          <button class="pill" data-status="idle">Idle</button>
+          <button class="pill" data-status="offline">Offline</button>
+        </div>
+      </div>
 
+      <!-- Machine Grid -->
+      <section id="machine-grid" class="machine-grid">
+        <!-- populated by JS -->
+      </section>
     </main>
   </div>
 
 </div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
 
 <script src="app.js"></script>
 </body>

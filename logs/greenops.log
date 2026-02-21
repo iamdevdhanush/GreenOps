@@ -332,3 +332,253 @@ psycopg2.OperationalError: server closed the connection unexpectedly
 	This probably means the server terminated abnormally
 	before or while processing the request.
 
+2026-02-19 18:24:13,532 server.services.machine INFO Machine marked offline: id=1 hostname=Ubuntu
+2026-02-19 18:24:13,536 server.main INFO Offline checker: marked 1 machine(s) offline.
+2026-02-19 18:46:49,512 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-19 18:46:49,616 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:46:49,652 server.database INFO Database connectivity verified.
+2026-02-19 18:46:49,664 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-19 18:46:50,849 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-19 18:46:50,851 server.main INFO Offline checker started (interval=60s, pid=1, thread=offline-check).
+2026-02-19 18:46:50,852 server.main INFO GreenOps server initialised and ready.
+2026-02-19 18:46:51,024 server.database INFO Database pool closed.
+2026-02-19 18:46:51,045 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:46:51,048 server.database INFO Database connectivity verified.
+2026-02-19 18:46:51,067 server.database INFO Database pool closed.
+2026-02-19 18:46:51,083 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:46:51,087 server.database INFO Database connectivity verified.
+2026-02-19 18:46:51,296 server.database INFO Database pool closed.
+2026-02-19 18:46:51,331 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:46:51,352 server.database INFO Database connectivity verified.
+2026-02-19 18:46:51,487 server.database INFO Database pool closed.
+2026-02-19 18:46:51,623 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-19 18:46:51,629 server.database INFO Database connectivity verified.
+2026-02-19 18:47:47,283 server.services.machine INFO Registration: mac=E9:D1:EF*** id=2 new=True
+2026-02-19 18:47:47,286 server.routes.agents INFO Agent registered: mac=E9:D1:EF*** msg=Machine registered successfully
+2026-02-19 18:47:47,557 server.services.machine INFO Heartbeat: id=2 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:47:50,920 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-19 18:47:50,934 server.main ERROR Offline check error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "/app/server/main.py", line 145, in _loop
+    count = MachineService.update_offline_machines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/server/services/machine.py", line 248, in update_offline_machines
+    updated = db.execute_query(
+              ^^^^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 125, in execute_query
+    cur.execute(query, params)
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-19 18:48:47,743 server.services.machine INFO Heartbeat: id=2 status=online idle=17s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:49:47,905 server.services.machine INFO Heartbeat: id=2 status=online idle=77s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:50:48,082 server.services.machine INFO Heartbeat: id=2 status=online idle=19s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:51:48,562 server.services.machine INFO Heartbeat: id=2 status=online idle=79s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:52:48,938 server.services.machine INFO Heartbeat: id=2 status=online idle=139s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:53:49,258 server.services.machine INFO Heartbeat: id=2 status=online idle=200s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:54:49,356 server.services.machine INFO Heartbeat: id=2 status=online idle=39s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:55:50,263 server.services.machine INFO Heartbeat: id=2 status=online idle=99s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:56:51,235 server.services.machine INFO Heartbeat: id=2 status=online idle=160s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:57:51,336 server.services.machine INFO Heartbeat: id=2 status=online idle=221s increment=0s energy_delta=0.000 kWh
+2026-02-19 18:58:51,438 server.services.machine INFO Heartbeat: id=2 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 09:27:36,989 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-21 09:27:37,010 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 09:27:37,015 server.database INFO Database connectivity verified.
+2026-02-21 09:27:37,019 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-21 09:27:37,185 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-21 09:27:37,185 server.main INFO Offline checker started (interval=60s, pid=1, thread=offline-check).
+2026-02-21 09:27:37,186 server.main INFO GreenOps server initialised and ready.
+2026-02-21 09:27:37,205 server.database INFO Database pool closed.
+2026-02-21 09:27:37,214 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 09:27:37,219 server.database INFO Database connectivity verified.
+2026-02-21 09:27:37,313 server.database INFO Database pool closed.
+2026-02-21 09:27:37,356 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 09:27:37,359 server.database INFO Database pool closed.
+2026-02-21 09:27:37,360 server.database INFO Database connectivity verified.
+2026-02-21 09:27:37,376 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 09:27:37,409 server.database INFO Database connectivity verified.
+2026-02-21 09:27:37,473 server.database INFO Database pool closed.
+2026-02-21 09:27:37,499 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 09:27:37,503 server.database INFO Database connectivity verified.
+2026-02-21 09:27:52,176 server.auth INFO Successful login for user id=1
+2026-02-21 09:28:37,201 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 09:28:37,201 server.main ERROR Offline check error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "/app/server/main.py", line 145, in _loop
+    count = MachineService.update_offline_machines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/server/services/machine.py", line 248, in update_offline_machines
+    updated = db.execute_query(
+              ^^^^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 125, in execute_query
+    cur.execute(query, params)
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 09:29:38,167 server.services.machine INFO Machine marked offline: id=2 hostname=LAPTOP-L5P9GC77
+2026-02-21 09:29:38,173 server.main INFO Offline checker: marked 1 machine(s) offline.
+2026-02-21 13:51:16,217 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-21 13:51:16,238 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:51:16,241 server.database INFO Database connectivity verified.
+2026-02-21 13:51:16,245 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-21 13:51:16,472 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-21 13:51:16,473 server.main INFO Offline checker started (interval=60s, pid=1, thread=offline-check).
+2026-02-21 13:51:16,474 server.main INFO GreenOps server initialised and ready.
+2026-02-21 13:51:16,594 server.database INFO Database pool closed.
+2026-02-21 13:51:16,616 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:51:16,643 server.database INFO Database connectivity verified.
+2026-02-21 13:51:16,653 server.database INFO Database pool closed.
+2026-02-21 13:51:16,679 server.database INFO Database pool closed.
+2026-02-21 13:51:16,710 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:51:16,718 server.database INFO Database connectivity verified.
+2026-02-21 13:51:16,733 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:51:16,735 server.database INFO Database pool closed.
+2026-02-21 13:51:16,768 server.database INFO Database connectivity verified.
+2026-02-21 13:51:16,784 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:51:16,805 server.database INFO Database connectivity verified.
+2026-02-21 13:51:35,217 server.auth INFO Successful login for user id=1
+2026-02-21 13:51:56,673 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:51:56,837 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:52:00,942 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:52:16,483 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 13:52:16,484 server.main ERROR Offline check error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "/app/server/main.py", line 145, in _loop
+    count = MachineService.update_offline_machines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/server/services/machine.py", line 248, in update_offline_machines
+    updated = db.execute_query(
+              ^^^^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 125, in execute_query
+    cur.execute(query, params)
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 13:53:01,105 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:54:01,286 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:54:29,800 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:58:21,642 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-21 13:58:21,653 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:58:21,655 server.database INFO Database connectivity verified.
+2026-02-21 13:58:21,658 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-21 13:58:21,723 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-21 13:58:21,743 server.main INFO Offline checker started (interval=60s, pid=1, thread=offline-check).
+2026-02-21 13:58:21,744 server.main INFO GreenOps server initialised and ready.
+2026-02-21 13:58:21,838 server.database INFO Database pool closed.
+2026-02-21 13:58:21,877 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:58:21,896 server.database INFO Database connectivity verified.
+2026-02-21 13:58:21,899 server.database INFO Database pool closed.
+2026-02-21 13:58:21,912 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:58:21,916 server.database INFO Database connectivity verified.
+2026-02-21 13:58:21,980 server.database INFO Database pool closed.
+2026-02-21 13:58:21,999 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:58:22,002 server.database INFO Database connectivity verified.
+2026-02-21 13:58:22,077 server.database INFO Database pool closed.
+2026-02-21 13:58:22,090 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 13:58:22,092 server.database INFO Database connectivity verified.
+2026-02-21 13:58:29,098 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 13:59:21,777 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 13:59:21,778 server.main ERROR Offline check error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "/app/server/main.py", line 145, in _loop
+    count = MachineService.update_offline_machines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/server/services/machine.py", line 248, in update_offline_machines
+    updated = db.execute_query(
+              ^^^^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 125, in execute_query
+    cur.execute(query, params)
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 13:59:29,230 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:00:30,349 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:01:30,831 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:02:08,894 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:03:02,256 server.auth INFO Successful login for user id=1
+2026-02-21 14:03:13,585 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:04:13,726 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:05:14,031 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:06:14,265 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:07:14,424 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:08:14,774 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:09:16,199 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:10:16,587 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:11:16,965 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:12:17,122 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:13:17,251 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:17:32,479 server.services.machine INFO Machine marked offline: id=1 hostname=Ubuntu
+2026-02-21 14:17:32,480 server.main INFO Offline checker: marked 1 machine(s) offline.
+2026-02-21 14:17:32,634 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:17:32,907 server.database INFO Database pool closed.
+2026-02-21 14:17:32,932 server.database INFO Database pool initialised (minconn=1, maxconn=20).
+2026-02-21 14:17:32,935 server.database INFO Database connectivity verified.
+2026-02-21 14:18:32,483 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 14:18:32,484 server.main ERROR Offline check error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "/app/server/main.py", line 145, in _loop
+    count = MachineService.update_offline_machines()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/server/services/machine.py", line 248, in update_offline_machines
+    updated = db.execute_query(
+              ^^^^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 125, in execute_query
+    cur.execute(query, params)
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/extras.py", line 236, in execute
+    return super().execute(query, vars)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 14:18:32,657 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:19:32,679 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:20:32,699 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:21:32,719 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:22:32,742 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 14:23:32,766 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 15:17:28,450 server.services.machine INFO Machine marked offline: id=1 hostname=Ubuntu
+2026-02-21 15:17:28,451 server.main INFO Offline checker: marked 1 machine(s) offline.
+2026-02-21 15:17:28,783 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh
+2026-02-21 15:18:11,289 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh

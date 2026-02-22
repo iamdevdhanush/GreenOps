@@ -319,3 +319,361 @@ psycopg2.OperationalError: connection to server at "db" (172.18.0.3), port 5432 
 2026-02-21 17:21:29,122 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
 2026-02-21 17:21:29,163 server.database INFO Database connectivity verified.
 2026-02-21 17:21:29,165 server.main INFO Offline checker: DB pool reconnected.
+2026-02-21 17:26:39,172 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-21 17:26:39,182 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:26:39,183 server.database INFO Database connectivity verified.
+2026-02-21 17:26:39,204 server.main INFO Schema upgrades applied (migration 003).
+2026-02-21 17:26:39,209 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-21 17:26:39,260 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-21 17:26:39,261 server.main INFO Offline checker started (interval=60s, pid=1).
+2026-02-21 17:26:39,262 server.main INFO GreenOps server initialised and ready.
+2026-02-21 17:26:39,291 server.database INFO Database pool closed.
+2026-02-21 17:26:39,299 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:26:39,300 server.database INFO Database connectivity verified.
+2026-02-21 17:26:39,375 server.database INFO Database pool closed.
+2026-02-21 17:26:39,385 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:26:39,387 server.database INFO Database connectivity verified.
+2026-02-21 17:26:39,404 server.database INFO Database pool closed.
+2026-02-21 17:26:39,413 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:26:39,415 server.database INFO Database connectivity verified.
+2026-02-21 17:26:39,456 server.database INFO Database pool closed.
+2026-02-21 17:26:39,470 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:26:39,478 server.database INFO Database connectivity verified.
+2026-02-21 17:28:03,302 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-21 17:28:03,310 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:28:03,312 server.database INFO Database connectivity verified.
+2026-02-21 17:28:03,337 server.main INFO Schema upgrades applied (migration 003).
+2026-02-21 17:28:03,342 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-21 17:28:03,406 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-21 17:28:03,407 server.main INFO Offline checker started (interval=60s, pid=1).
+2026-02-21 17:28:03,408 server.main INFO GreenOps server initialised and ready.
+2026-02-21 17:28:03,426 server.database INFO Database pool closed.
+2026-02-21 17:28:03,435 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:28:03,438 server.database INFO Database connectivity verified.
+2026-02-21 17:28:03,503 server.database INFO Database pool closed.
+2026-02-21 17:28:03,513 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:28:03,519 server.database INFO Database connectivity verified.
+2026-02-21 17:28:03,594 server.database INFO Database pool closed.
+2026-02-21 17:28:03,614 server.database INFO Database pool closed.
+2026-02-21 17:28:03,630 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:28:03,632 server.database INFO Database connectivity verified.
+2026-02-21 17:28:03,633 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:28:03,634 server.database INFO Database connectivity verified.
+2026-02-21 17:28:13,300 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1057s
+2026-02-21 17:28:34,631 server.routes.dashboard INFO Command 'sleep' queued for machine 1 by user 1 (cmd_id=1)
+2026-02-21 17:28:43,258 server.routes.dashboard INFO Command 'sleep' queued for machine 1 by user 1 (cmd_id=2)
+2026-02-21 17:29:03,408 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-21 17:29:03,409 server.main ERROR Offline checker: DB connection lost (server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+). Reinitialising pool …
+2026-02-21 17:29:03,428 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-21 17:29:03,447 server.database INFO Database connectivity verified.
+2026-02-21 17:29:03,449 server.main INFO Offline checker: DB pool reconnected.
+2026-02-21 17:29:13,398 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1117s
+2026-02-21 17:29:13,861 server.routes.agents INFO Command 2 reported executed by machine 1: Executed: systemctl suspend
+2026-02-22 06:38:21,608 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-22 06:38:22,133 server.database ERROR Failed to create DB pool: connection to server at "db" (172.18.0.4), port 5432 failed: FATAL:  the database system is starting up
+
+2026-02-22 06:38:22,153 server.main ERROR Failed to initialise database: connection to server at "db" (172.18.0.4), port 5432 failed: FATAL:  the database system is starting up
+Traceback (most recent call last):
+  File "/app/server/main.py", line 229, in create_app
+    db.initialize()
+  File "/app/server/database.py", line 60, in initialize
+    self._pool = pool.ThreadedConnectionPool(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/pool.py", line 161, in __init__
+    AbstractConnectionPool.__init__(
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/pool.py", line 59, in __init__
+    self._connect()
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/pool.py", line 63, in _connect
+    conn = psycopg2.connect(*self._args, **self._kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "db" (172.18.0.4), port 5432 failed: FATAL:  the database system is starting up
+
+2026-02-22 06:39:02,737 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-22 06:39:03,542 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:39:03,647 server.database INFO Database connectivity verified.
+2026-02-22 06:39:07,267 server.main INFO Schema upgrades applied (migration 003).
+2026-02-22 06:39:07,388 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 06:39:11,656 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 06:39:11,680 server.main INFO Offline checker started (interval=60s, pid=1).
+2026-02-22 06:39:11,682 server.main INFO GreenOps server initialised and ready.
+2026-02-22 06:39:12,079 server.database INFO Database pool closed.
+2026-02-22 06:39:12,337 server.database INFO Database pool closed.
+2026-02-22 06:39:12,395 server.database INFO Database pool closed.
+2026-02-22 06:39:12,437 server.database INFO Database pool closed.
+2026-02-22 06:39:12,712 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:39:12,935 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:39:12,996 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:39:13,009 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:39:13,077 server.database INFO Database connectivity verified.
+2026-02-22 06:39:13,185 server.database INFO Database connectivity verified.
+2026-02-22 06:39:13,173 server.database INFO Database connectivity verified.
+2026-02-22 06:39:13,360 server.database INFO Database connectivity verified.
+2026-02-22 06:40:11,784 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-22 06:40:11,785 server.main ERROR Offline checker: DB connection lost (server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+). Reinitialising pool …
+2026-02-22 06:40:12,452 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:40:12,460 server.database INFO Database connectivity verified.
+2026-02-22 06:40:12,460 server.main INFO Offline checker: DB pool reconnected.
+2026-02-22 06:41:13,159 server.services.machine INFO Machine marked offline: id=1 hostname=Ubuntu
+2026-02-22 06:41:13,172 server.main INFO Offline checker: marked 1 machine(s) offline.
+2026-02-22 06:45:11,732 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-22 06:45:11,742 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:45:11,743 server.database INFO Database connectivity verified.
+2026-02-22 06:45:11,763 server.main INFO Schema upgrades applied (migration 003).
+2026-02-22 06:45:11,768 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 06:45:11,974 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 06:45:11,976 server.main INFO Offline checker started (interval=60s, pid=1).
+2026-02-22 06:45:11,976 server.main INFO GreenOps server initialised and ready.
+2026-02-22 06:45:12,085 server.database INFO Database pool closed.
+2026-02-22 06:45:12,102 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:45:12,105 server.database INFO Database connectivity verified.
+2026-02-22 06:45:12,134 server.database INFO Database pool closed.
+2026-02-22 06:45:12,141 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:45:12,142 server.database INFO Database connectivity verified.
+2026-02-22 06:45:12,199 server.database INFO Database pool closed.
+2026-02-22 06:45:12,207 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:45:12,209 server.database INFO Database connectivity verified.
+2026-02-22 06:45:12,294 server.database INFO Database pool closed.
+2026-02-22 06:45:12,301 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:45:12,302 server.database INFO Database connectivity verified.
+2026-02-22 06:45:40,544 server.auth INFO Successful login for user id=1
+2026-02-22 06:45:50,925 server.auth INFO Successful login for user id=1
+2026-02-22 06:45:51,157 server.routes.auth INFO Password changed for user id=1
+2026-02-22 06:45:59,949 server.auth INFO Successful login for user id=1
+2026-02-22 06:46:11,979 server.database ERROR Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-22 06:46:11,979 server.main ERROR Offline checker: DB connection lost (server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+). Reinitialising pool …
+2026-02-22 06:46:11,987 server.database INFO Database pool initialised (minconn=1, maxconn=20, keepalives=on).
+2026-02-22 06:46:11,989 server.database INFO Database connectivity verified.
+2026-02-22 06:46:11,989 server.main INFO Offline checker: DB pool reconnected.
+2026-02-22 06:46:25,418 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=672s
+2026-02-22 06:47:27,046 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=733s
+2026-02-22 06:48:28,031 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=794s
+2026-02-22 06:49:29,053 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=855s
+2026-02-22 06:50:29,927 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=916s
+2026-02-22 06:51:31,251 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=977s
+2026-02-22 06:52:31,854 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1038s
+2026-02-22 06:53:32,055 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1099s
+2026-02-22 06:54:32,175 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1159s
+2026-02-22 06:55:33,152 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1219s
+2026-02-22 06:56:34,162 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1280s
+2026-02-22 06:57:35,394 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1341s
+2026-02-22 06:58:43,504 server.routes.dashboard INFO Command 'sleep' queued for machine 1 by user 1 (cmd_id=34)
+2026-02-22 07:42:41,573 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-22 07:42:41,574 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 07:42:41,590 server.database INFO Database connectivity verified.
+2026-02-22 07:42:41,619 server.main INFO Schema upgrades applied (migration 003).
+2026-02-22 07:42:41,624 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 07:42:41,698 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 07:42:41,699 server.main INFO Offline checker started (interval=60s, pid=1).
+2026-02-22 07:42:41,700 server.main INFO GreenOps server initialised and ready.
+2026-02-22 07:42:41,725 server.database INFO Database pool closed.
+2026-02-22 07:42:41,728 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 07:42:41,744 server.database INFO Database connectivity verified.
+2026-02-22 07:42:41,823 server.database INFO Database pool closed.
+2026-02-22 07:42:41,824 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 07:42:41,859 server.database INFO Database connectivity verified.
+2026-02-22 07:42:41,930 server.database INFO Database pool closed.
+2026-02-22 07:42:41,931 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 07:42:41,953 server.database INFO Database connectivity verified.
+2026-02-22 07:42:42,019 server.database INFO Database pool closed.
+2026-02-22 07:42:42,020 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 07:42:42,033 server.database INFO Database connectivity verified.
+2026-02-22 07:43:32,690 server.services.machine INFO Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=4099s
+2026-02-22 07:43:32,974 server.routes.agents INFO Command 34 reported executed by machine 1: Executed: systemctl suspend
+2026-02-22 11:43:06,932 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-22 11:43:06,935 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:43:06,954 server.database ERROR Database error: connection to server at "db" (172.18.0.3), port 5432 failed: FATAL:  the database system is starting up
+
+2026-02-22 11:43:06,955 server.database ERROR DB smoke-test failed: connection to server at "db" (172.18.0.3), port 5432 failed: FATAL:  the database system is starting up
+
+2026-02-22 11:43:06,955 server.main ERROR Failed to initialise database: connection to server at "db" (172.18.0.3), port 5432 failed: FATAL:  the database system is starting up
+Traceback (most recent call last):
+  File "/app/server/main.py", line 227, in create_app
+    db.initialize()
+  File "/app/server/database.py", line 78, in initialize
+    with self.get_connection() as conn:
+  File "/usr/local/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/app/server/database.py", line 93, in get_connection
+    conn = self._pool.getconn()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/pool.py", line 169, in getconn
+    return self._getconn(key)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/pool.py", line 93, in _getconn
+    return self._connect(key)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/pool.py", line 63, in _connect
+    conn = psycopg2.connect(*self._args, **self._kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "db" (172.18.0.3), port 5432 failed: FATAL:  the database system is starting up
+
+2026-02-22 11:43:09,013 server.main INFO create_app() starting (pid=1, debug=False, log=/app/logs/greenops.log)
+2026-02-22 11:43:09,017 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:43:09,092 server.database INFO Database connectivity verified.
+2026-02-22 11:43:09,693 server.main INFO Schema upgrades applied (migration 003).
+2026-02-22 11:43:09,723 server.main INFO Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 11:43:09,852 server.main INFO Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 11:43:09,854 server.main INFO Offline checker started (interval=60s, pid=1).
+2026-02-22 11:43:09,855 server.main INFO GreenOps server initialised and ready.
+2026-02-22 11:43:09,898 server.database INFO Database pool closed.
+2026-02-22 11:43:09,901 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:43:09,918 server.database INFO Database connectivity verified.
+2026-02-22 11:43:09,986 server.database INFO Database pool closed.
+2026-02-22 11:43:09,986 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:43:09,999 server.database INFO Database connectivity verified.
+2026-02-22 11:43:10,020 server.database INFO Database pool closed.
+2026-02-22 11:43:10,021 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:43:10,041 server.database INFO Database connectivity verified.
+2026-02-22 11:43:10,114 server.database INFO Database pool closed.
+2026-02-22 11:43:10,115 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:43:10,126 server.database INFO Database connectivity verified.
+2026-02-22 11:44:09,943 server.services.machine INFO Machine marked offline: id=1 hostname=Ubuntu
+2026-02-22 11:44:09,944 server.main INFO Offline checker: marked 1 machine(s) offline.
+2026-02-22 11:58:20,935 server.database ERROR Database error: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:58:51,365 server.database ERROR Database error: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:59:11,334 server.database ERROR Database error: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:59:11,334 server.main ERROR Offline checker: DB connection lost (could not translate host name "db" to address: Name or service not known
+). Reinitialising pool …
+2026-02-22 11:59:11,334 server.database INFO Database pool initialised (minconn=0, maxconn=20, keepalives=on).
+2026-02-22 11:59:11,658 server.database ERROR Database error: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:59:11,658 server.database ERROR DB smoke-test failed: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:59:11,659 server.main ERROR Offline checker: reconnect failed: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:59:21,588 server.database ERROR Database error: could not translate host name "db" to address: Name or service not known
+
+2026-02-22 11:59:28,481 server.database INFO Database pool closed.
+2026-02-22 11:59:28,719 server.database INFO Database pool closed.
+2026-02-22 11:59:28,737 server.database INFO Database pool closed.
+2026-02-22 11:59:28,742 server.database INFO Database pool closed.
+2026-02-22 11:59:31,254 server.main                    INFO     create_app() starting — pid=1, debug=False, log=/app/logs/greenops.log
+2026-02-22 11:59:31,262 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 11:59:31,263 server.database                INFO     Database connectivity verified.
+2026-02-22 11:59:31,283 server.main                    INFO     Schema migrations complete.
+2026-02-22 11:59:31,286 server.main                    INFO     Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 11:59:31,337 server.main                    INFO     Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 11:59:31,338 server.main                    INFO     Offline checker started (interval=60s, pid=1).
+2026-02-22 11:59:31,338 server.main                    INFO     GreenOps server initialised and ready.
+2026-02-22 11:59:31,357 server.database                INFO     Database pool closed.
+2026-02-22 11:59:31,363 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 11:59:31,365 server.database                INFO     Database connectivity verified.
+2026-02-22 11:59:31,388 server.database                INFO     Database pool closed.
+2026-02-22 11:59:31,395 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 11:59:31,397 server.database                INFO     Database connectivity verified.
+2026-02-22 11:59:31,473 server.database                INFO     Database pool closed.
+2026-02-22 11:59:31,480 server.database                INFO     Database pool closed.
+2026-02-22 11:59:31,482 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 11:59:31,482 server.database                INFO     Database connectivity verified.
+2026-02-22 11:59:31,486 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 11:59:31,488 server.database                INFO     Database connectivity verified.
+2026-02-22 12:00:06,239 server.database                INFO     Database pool closed.
+2026-02-22 12:00:06,241 server.database                INFO     Database pool closed.
+2026-02-22 12:00:06,246 server.database                INFO     Database pool closed.
+2026-02-22 12:00:06,392 server.database                INFO     Database pool closed.
+2026-02-22 12:00:16,644 server.main                    INFO     create_app() starting — pid=1, debug=False, log=/app/logs/greenops.log
+2026-02-22 12:00:16,651 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:00:16,653 server.database                INFO     Database connectivity verified.
+2026-02-22 12:00:16,674 server.main                    INFO     Schema migrations complete.
+2026-02-22 12:00:16,678 server.main                    INFO     Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 12:00:16,733 server.main                    INFO     Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 12:00:16,733 server.main                    INFO     Offline checker started (interval=60s, pid=1).
+2026-02-22 12:00:16,734 server.main                    INFO     GreenOps server initialised and ready.
+2026-02-22 12:00:16,752 server.database                INFO     Database pool closed.
+2026-02-22 12:00:16,761 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:00:16,763 server.database                INFO     Database connectivity verified.
+2026-02-22 12:00:16,850 server.database                INFO     Database pool closed.
+2026-02-22 12:00:16,858 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:00:16,859 server.database                INFO     Database connectivity verified.
+2026-02-22 12:00:16,870 server.database                INFO     Database pool closed.
+2026-02-22 12:00:16,876 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:00:16,878 server.database                INFO     Database connectivity verified.
+2026-02-22 12:00:16,944 server.database                INFO     Database pool closed.
+2026-02-22 12:00:16,952 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:00:16,954 server.database                INFO     Database connectivity verified.
+2026-02-22 12:00:57,954 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1144s
+2026-02-22 12:01:16,742 server.database                ERROR    Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-22 12:01:16,743 server.main                    ERROR    Offline checker: DB connection lost (server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+). Reinitialising pool …
+2026-02-22 12:01:16,752 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:01:16,754 server.database                INFO     Database connectivity verified.
+2026-02-22 12:01:16,754 server.main                    INFO     Offline checker: DB pool reconnected.
+2026-02-22 12:01:57,997 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1204s
+2026-02-22 12:02:20,145 server.database                INFO     Database pool closed.
+2026-02-22 12:02:20,145 server.database                INFO     Database pool closed.
+2026-02-22 12:02:20,146 server.database                INFO     Database pool closed.
+2026-02-22 12:02:20,246 server.database                INFO     Database pool closed.
+2026-02-22 12:03:22,473 server.main                    INFO     create_app() starting — pid=1, debug=False, log=/app/logs/greenops.log
+2026-02-22 12:03:22,482 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:03:22,484 server.database                INFO     Database connectivity verified.
+2026-02-22 12:03:22,506 server.main                    INFO     Schema migrations complete.
+2026-02-22 12:03:22,510 server.main                    INFO     Applying ADMIN_INITIAL_PASSWORD …
+2026-02-22 12:03:22,568 server.main                    INFO     Admin password updated from ADMIN_INITIAL_PASSWORD.
+2026-02-22 12:03:22,570 server.main                    INFO     Offline checker started (interval=60s, pid=1).
+2026-02-22 12:03:22,570 server.main                    INFO     GreenOps server initialised and ready.
+2026-02-22 12:03:22,588 server.database                INFO     Database pool closed.
+2026-02-22 12:03:22,596 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:03:22,599 server.database                INFO     Database connectivity verified.
+2026-02-22 12:03:22,628 server.database                INFO     Database pool closed.
+2026-02-22 12:03:22,636 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:03:22,639 server.database                INFO     Database connectivity verified.
+2026-02-22 12:03:22,680 server.database                INFO     Database pool closed.
+2026-02-22 12:03:22,705 server.database                INFO     Database pool closed.
+2026-02-22 12:03:22,723 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:03:22,723 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:03:22,725 server.database                INFO     Database connectivity verified.
+2026-02-22 12:03:22,726 server.database                INFO     Database connectivity verified.
+2026-02-22 12:03:24,307 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1290s
+2026-02-22 12:04:22,605 server.database                ERROR    Database error: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2026-02-22 12:04:22,606 server.main                    ERROR    Offline checker: DB connection lost (server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+). Reinitialising pool …
+2026-02-22 12:04:22,621 server.database                INFO     Database pool created (minconn=1, maxconn=10, keepalives=on).
+2026-02-22 12:04:22,635 server.database                INFO     Database connectivity verified.
+2026-02-22 12:04:22,635 server.main                    INFO     Offline checker: DB pool reconnected.
+2026-02-22 12:04:24,338 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1350s
+2026-02-22 12:05:24,388 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1410s
+2026-02-22 12:06:24,456 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1470s
+2026-02-22 12:07:24,512 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1530s
+2026-02-22 12:08:24,554 server.services.machine        INFO     Heartbeat: id=1 status=online idle=0s increment=0s energy_delta=0.000 kWh uptime=1591s
+2026-02-22 12:09:07,718 server.database                INFO     Database pool closed.
+2026-02-22 12:09:08,059 server.database                INFO     Database pool closed.
+2026-02-22 12:09:08,062 server.database                INFO     Database pool closed.
+2026-02-22 12:09:08,060 server.database                INFO     Database pool closed.

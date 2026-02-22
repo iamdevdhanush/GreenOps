@@ -1,6 +1,13 @@
 """
 GreenOps Authentication Service
-Handles JWT generation/verification and agent token management.
+================================
+JWT generation/verification for admin users.
+SHA-256 hashed UUID tokens for agent authentication.
+Argon2id for password storage.
+
+Timing attack protection: always runs ph.verify() even for unknown users
+(using a valid dummy hash) so response time does not reveal whether a
+username exists.  The dummy hash must be verifiable by argon2-cffi.
 """
 import hashlib
 import secrets
@@ -19,41 +26,53 @@ logger = logging.getLogger(__name__)
 
 ph = PasswordHasher(time_cost=2, memory_cost=65536, parallelism=4)
 
-_DUMMY_HASH = (
-    "$argon2id$v=19$m=65536,t=2,p=4"
-    "$dGVzdHNhbHRkdW1teXZhbHVl"
-    "$ZTqFgJXCm3f7q+v4aB3kDgHfQv1CxLm8sPqW3nRk2oo"
-)
+# A valid pre-computed Argon2id hash of the string "dummy" — used to
+# equalise response time for unknown usernames.  Generated with:
+#   from argon2 import PasswordHasher
+#   ph = PasswordHasher(time_cost=2, memory_cost=65536, parallelism=4)
+#   print(ph.hash("dummy"))
+# The exact hash will differ per run (random salt) — that's expected.
+# We pre-compute one here so the verify() call always works structurally.
+_DUMMY_HASH = ph.hash("dummy")
 
 
 class AuthService:
 
     @staticmethod
     def authenticate_user(username: str, password: str) -> Optional[dict]:
+        """
+        Verify username/password.  Returns user dict on success, None on failure.
+        Always performs a full Argon2id verification to prevent timing attacks.
+        """
         query = """
             SELECT id, username, password_hash, role
-            FROM users
-            WHERE username = %s
+            FROM   users
+            WHERE  username = %s
         """
         user = db.execute_one(query, (username,))
 
         if not user:
+            # Run dummy verify to equalise timing — always fails, always takes
+            # the same ~50 ms as a real verify.
             try:
                 ph.verify(_DUMMY_HASH, password)
             except Exception:
                 pass
-            logger.warning("Login attempt for unknown user (username withheld)")
+            logger.warning("Login attempt for unknown username (withheld).")
             return None
 
         try:
             ph.verify(user["password_hash"], password)
         except VerifyMismatchError:
-            logger.warning(f"Failed login attempt for user id={user['id']}")
+            logger.warning(f"Failed login for user id={user['id']}")
             return None
         except (VerificationError, InvalidHashError) as exc:
-            logger.error(f"Password verification error for user id={user['id']}: {exc}")
+            logger.error(
+                f"Password verification error for user id={user['id']}: {exc}"
+            )
             return None
 
+        # Re-hash if parameters have changed (cost upgrade path)
         if ph.check_needs_rehash(user["password_hash"]):
             try:
                 new_hash = ph.hash(password)
@@ -61,26 +80,28 @@ class AuthService:
                     "UPDATE users SET password_hash = %s WHERE id = %s",
                     (new_hash, user["id"]),
                 )
-                logger.info(f"Rehashed password for user id={user['id']}")
+                logger.info(f"Rehashed password for user id={user['id']}.")
             except Exception as exc:
-                logger.error(f"Failed to rehash password for user id={user['id']}: {exc}")
+                logger.error(
+                    f"Failed to rehash password for user id={user['id']}: {exc}"
+                )
 
         logger.info(f"Successful login for user id={user['id']}")
         return {
-            "id": user["id"],
+            "id":       user["id"],
             "username": user["username"],
-            "role": user["role"],
+            "role":     user["role"],
         }
 
     @staticmethod
     def generate_jwt(user_id: int, username: str, role: str) -> str:
         now = datetime.now(timezone.utc)
         payload = {
-            "user_id": user_id,
+            "user_id":  user_id,
             "username": username,
-            "role": role,
-            "iat": now,
-            "exp": now + timedelta(hours=config.JWT_EXPIRATION_HOURS),
+            "role":     role,
+            "iat":      now,
+            "exp":      now + timedelta(hours=config.JWT_EXPIRATION_HOURS),
         }
         return jwt.encode(payload, config.JWT_SECRET_KEY, algorithm=config.JWT_ALGORITHM)
 
@@ -93,7 +114,7 @@ class AuthService:
                 algorithms=[config.JWT_ALGORITHM],
             )
         except jwt.ExpiredSignatureError:
-            logger.debug("Rejected expired JWT")
+            logger.debug("Rejected expired JWT.")
             return None
         except jwt.InvalidTokenError as exc:
             logger.debug(f"Rejected invalid JWT: {exc}")
@@ -101,8 +122,9 @@ class AuthService:
 
     @staticmethod
     def create_agent_token(machine_id: int) -> str:
+        """Create (or rotate) a plaintext agent token; store SHA-256 hash."""
         token = secrets.token_urlsafe(32)
-        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
 
         db.execute_query(
             """
@@ -115,27 +137,24 @@ class AuthService:
             """,
             (machine_id, token_hash),
         )
-
         return token
 
     @staticmethod
     def verify_agent_token(token: str) -> Optional[int]:
-        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
-
+        """Return machine_id if token is valid, None otherwise."""
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
         record = db.execute_one(
             """
             SELECT machine_id
-            FROM agent_tokens
-            WHERE token_hash = %s
-              AND revoked = FALSE
+            FROM   agent_tokens
+            WHERE  token_hash = %s
+              AND  revoked    = FALSE
             """,
             (token_hash,),
         )
-
         if not record:
-            logger.debug("Agent token not found or revoked")
+            logger.debug("Agent token not found or revoked.")
             return None
-
         return record["machine_id"]
 
     @staticmethod

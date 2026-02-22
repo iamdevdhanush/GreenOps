@@ -1,17 +1,10 @@
-# GreenOps — Docker Compose
+# GreenOps — Production Docker Compose
 # ─────────────────────────────────────────────────────────────────────────────
 # Start order:
-#   db (healthy) → server (gunicorn on_starting waits for pg) → nginx
+#   db (healthy) → server (healthy) → nginx
 #
-# The `sleep 3` that was previously in the server command has been removed.
-# It was both fragile (too short on slow hardware / first-run migrations) and
-# redundant — gunicorn's on_starting() hook retries the PostgreSQL connection
-# for up to 60 s before giving up.
-#
-# depends_on: service_healthy ensures the PostgreSQL process is accepting
-# connections (pg_isready) before Docker even starts the server container.
-# on_starting() in gunicorn.conf.py provides a second layer of defence in
-# case the database is still running its docker-entrypoint-initdb.d scripts.
+# nginx waits for server to be *healthy* (not just started) so it never
+# starts proxying to a server that hasn't finished DB init yet.
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -20,60 +13,75 @@ services:
   db:
     image: postgres:15-alpine
     container_name: greenops-db
-    env_file:
-      - .env
+    env_file: .env
     environment:
-      POSTGRES_DB: greenops
-      POSTGRES_USER: greenops
+      POSTGRES_DB:       greenops
+      POSTGRES_USER:     greenops
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command: >
+      postgres
+      -c tcp_keepalives_idle=60
+      -c tcp_keepalives_interval=10
+      -c tcp_keepalives_count=6
+      -c log_min_duration_statement=1000
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # Both migration files are mounted here.  PostgreSQL runs ALL *.sql files
-      # in this directory alphabetically on first-volume initialisation only.
-      - ./migrations:/docker-entrypoint-initdb.d
+      - ./migrations:/docker-entrypoint-initdb.d:ro
     ports:
-      - "5433:5432"   # 5433 on host to avoid conflicts with local postgres
+      - "5433:5432"     # host:5433 to avoid conflict with local postgres
     healthcheck:
-      # pg_isready -d greenops: checks that the 'greenops' database is
-      # accepting connections, not just that the postgres daemon is running.
-      test: ["CMD-SHELL", "pg_isready -U greenops -d greenops"]
-      interval: 5s
-      timeout: 5s
-      retries: 12      # 60 s total — enough for first-run schema init
+      test:         ["CMD-SHELL", "pg_isready -U greenops -d greenops"]
+      interval:     5s
+      timeout:      5s
+      retries:      12
       start_period: 10s
     restart: unless-stopped
+    networks:
+      - greenops
 
-  # ── GreenOps Server ────────────────────────────────────────────────────────
+  # ── GreenOps API Server ────────────────────────────────────────────────────
   server:
     build:
-      context: .
+      context:    .
       dockerfile: Dockerfile.server
     container_name: greenops-server
-    env_file:
-      - .env
+    env_file: .env
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
-      - ./logs:/app/logs    # persist gunicorn / app logs on the host
-    # No inline command override — the Dockerfile CMD is used as-is.
-    # gunicorn.conf.py's on_starting() handles the DB-readiness wait.
+      - ./logs:/app/logs
+    healthcheck:
+      test:         ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval:     15s
+      timeout:      10s
+      retries:      5
+      start_period: 90s      # allow time for gunicorn + DB init
     restart: unless-stopped
+    networks:
+      - greenops
 
-  # ── Nginx (dashboard + API reverse proxy) ──────────────────────────────────
+  # ── Nginx (dashboard + API proxy) ──────────────────────────────────────────
   nginx:
     image: nginx:alpine
     container_name: greenops-nginx
     ports:
       - "80:80"
     volumes:
-      - ./dashboard:/usr/share/nginx/html
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./dashboard:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - server
+      server:
+        condition: service_healthy    # wait until /health returns 200
     restart: unless-stopped
+    networks:
+      - greenops
 
 volumes:
   postgres_data:
+
+networks:
+  greenops:
+    driver: bridge

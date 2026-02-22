@@ -1,50 +1,40 @@
-# GreenOps Server — Dockerfile
-# ─────────────────────────────────────────────────────────────────────────────
-# PYTHONUNBUFFERED=1  — flush stdout/stderr immediately so log lines are never
-#                       swallowed when the container crashes.  Without this,
-#                       Python's C-level buffering can hold the last few log
-#                       lines in memory and Docker never sees them.
-# ─────────────────────────────────────────────────────────────────────────────
+# GreenOps Server — Production Dockerfile
 FROM python:3.11-slim
 
+# Prevent buffered stdout/stderr (ensures log lines appear immediately)
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 WORKDIR /app
 
-# System dependencies: postgresql-client for pg_isready / psql; curl for the
-# Docker health check.
+# System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         postgresql-client \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies before copying application code so Docker layer
-# caching keeps pip runs fast on code-only changes.
+# Install Python dependencies first (better layer caching)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Application source
-COPY server/      ./server/
-COPY migrations/  ./migrations/
+COPY server/       ./server/
+COPY migrations/   ./migrations/
 COPY gunicorn.conf.py .
 
-# Pre-create the log directory so RotatingFileHandler can always open its file
-# even before the bind-mount from docker-compose is attached.
-RUN mkdir -p /app/logs
+# Pre-create log directory with world-writable permissions
+# (gunicorn worker may run as a different uid than the build user)
+RUN mkdir -p /app/logs && chmod 777 /app/logs
 
 EXPOSE 8000
 
-# Health check: hits the /health endpoint which performs a lightweight
-# SELECT 1 against the DB pool.
-# --start-period: give the container time to complete DB pool init and any
-#                 first-boot admin-password update before counts start.
 HEALTHCHECK \
-    --interval=30s \
-    --timeout=5s \
-    --start-period=60s \
-    --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    --interval=15s \
+    --timeout=10s \
+    --start-period=90s \
+    --retries=5 \
+    CMD curl -fsS http://localhost:8000/health || exit 1
 
-# gunicorn.conf.py is in /app; gunicorn looks for it in the working directory.
 CMD ["gunicorn", "-c", "gunicorn.conf.py", "server.main:app"]

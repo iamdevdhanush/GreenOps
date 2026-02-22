@@ -1,117 +1,115 @@
 """
-GreenOps Gunicorn Configuration
-================================
-Key design decision: preload_app = True
-  - The WSGI app (server.main:app) is imported ONCE in the master process.
-  - create_app() → db.initialize() runs exactly once (no double-init).
-  - Background threads started in create_app() live in the master only;
-    they are NOT duplicated into workers after fork().
-  - post_fork() closes the inherited (shared) DB sockets and opens fresh
-    connections owned solely by the new worker process.
+GreenOps Gunicorn Configuration — Production
 
-Lifecycle with preload_app = True:
-  1. on_starting()   – master: wait for PostgreSQL to accept connections
-  2. App preloaded   – master: import server.main, run create_app()
-                       db.initialize() / _run_offline_check() happen here
-  3. Workers forked  – each worker is a copy of master memory
-  4. post_fork()     – each worker: close shared sockets, open fresh pool
-  5. Workers serve   – each worker owns its own independent connection pool
+Worker model: gthread (threaded), 4 workers × 2 threads = 8 concurrent.
+preload_app=True: app imported ONCE in master, workers fork.
+  - create_app() runs once → DB pool, schema migration, admin password,
+    offline checker all happen in master.
+  - post_fork() replaces the inherited (shared) pool with a worker-owned one.
+  - worker_exit() cleans up the worker's pool on exit.
+
+Timeout: 30s per-worker (industry standard). Adjust up only if you have
+genuinely long-running endpoints (e.g., bulk export).
 """
 
 import os
 import sys
 import time
 
-# ── Server socket ─────────────────────────────────────────────────────────────
+# ── Bind ──────────────────────────────────────────────────────────────────────
 bind = "0.0.0.0:8000"
 
 # ── Workers ───────────────────────────────────────────────────────────────────
-# gthread: one process per worker, multiple threads sharing one DB pool.
-# The pool size in server/config.py (default 20) should be >= threads * workers.
-workers = 4
+workers      = 4
 worker_class = "gthread"
-threads = 2
-timeout = 120
-keepalive = 5
+threads      = 2
+timeout      = 30       # 30s is industry standard; was 120 (too long)
+keepalive    = 5
+graceful_timeout = 30
 
-# ── CRITICAL: load the app once in the master before forking ──────────────────
-# Setting this to False (the default) causes each worker to call create_app()
-# independently, which leads to double db.initialize() calls, leaked connection
-# pools, and eventual PostgreSQL connection exhaustion.
+# ── App loading ───────────────────────────────────────────────────────────────
 preload_app = True
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+accesslog     = "-"     # stdout (captured by Docker / systemd)
+errorlog      = "-"     # stdout
+loglevel      = "info"
+access_log_format = '%(h)s "%(r)s" %(s)s %(b)s %(D)sus'
+
+# ── Process naming ────────────────────────────────────────────────────────────
+proc_name = "greenops"
 
 
 # ── Hooks ─────────────────────────────────────────────────────────────────────
 
 def on_starting(server):
     """
-    Runs in the master process BEFORE the app is loaded.
-
-    We wait here for PostgreSQL to accept connections so that db.initialize()
-    inside create_app() succeeds on the first attempt rather than calling
-    sys.exit(1) and triggering a Docker restart loop.
+    Master process: wait for PostgreSQL before loading the app.
+    The app's create_app() → db.initialize() will also verify connectivity,
+    but we do an early check here so the master never even attempts to import
+    the app if the DB isn't up yet, preventing a confusing ImportError-style
+    crash chain.
     """
     db_url = os.environ.get("DATABASE_URL", "")
     if not db_url:
-        print(
-            "[gunicorn] FATAL: DATABASE_URL is not set. Cannot start.",
-            flush=True,
-        )
+        print("[gunicorn] FATAL: DATABASE_URL not set.", flush=True)
         sys.exit(1)
-
-    print("[gunicorn] Waiting for PostgreSQL …", flush=True)
 
     try:
         import psycopg2
     except ImportError:
-        print("[gunicorn] FATAL: psycopg2 is not installed.", flush=True)
+        print("[gunicorn] FATAL: psycopg2 not installed.", flush=True)
         sys.exit(1)
 
-    for attempt in range(1, 31):          # up to ~60 s (30 × 2 s)
+    print("[gunicorn] Waiting for PostgreSQL …", flush=True)
+    for attempt in range(1, 31):          # up to 60 s
         try:
             conn = psycopg2.connect(db_url, connect_timeout=3)
             conn.close()
             print(
-                f"[gunicorn] PostgreSQL is ready (attempt {attempt}).",
+                f"[gunicorn] PostgreSQL ready (attempt {attempt}).",
                 flush=True,
             )
             return
         except psycopg2.OperationalError as exc:
             print(
-                f"[gunicorn] DB not ready yet (attempt {attempt}/30): {exc}",
+                f"[gunicorn] Waiting … attempt {attempt}/30: {exc}",
                 flush=True,
             )
             time.sleep(2)
 
-    print("[gunicorn] FATAL: PostgreSQL never became ready. Exiting.", flush=True)
+    print("[gunicorn] FATAL: PostgreSQL never became ready.", flush=True)
     sys.exit(1)
 
 
 def post_fork(server, worker):
     """
-    Runs inside each worker immediately after fork().
-
-    After fork() the worker inherits the master's open DB file descriptors.
-    Those sockets are now shared between master and worker at the OS level,
-    which is unsafe for psycopg2 connections.  We:
-      1. Close the inherited pool (releases the shared file descriptors in
-         this worker's address space without touching the master's copy).
-      2. Open a brand-new pool with connections owned exclusively by this worker.
-
-    This is the ONLY place db.initialize() should be called for workers.
-    create_app() initialises the pool for the master; post_fork() replaces it
-    for each worker.
+    Worker process: replace inherited master pool with a fresh worker pool.
+    The master's pool file descriptors are shared at the OS level after fork.
+    Closing them here (in the worker's address space) does NOT affect the
+    master's pool — they are separate memory spaces after fork.
     """
     from server.database import db
 
     try:
-        db.close()          # discard inherited (shared) connections
+        db.close()       # release inherited (shared) sockets
     except Exception:
-        pass                # pool may not exist yet on very first worker
+        pass
 
-    db.initialize()         # fresh connections owned by this worker
+    try:
+        db.initialize()  # fresh pool owned by this worker
+    except Exception as exc:
+        print(f"[gunicorn] Worker {worker.pid}: DB init failed: {exc}", flush=True)
+        # Don't sys.exit() here — gunicorn will detect the worker is broken
+        # and restart it. Exiting would cause an immediate respawn loop.
 
-    print(
-        f"[gunicorn] Worker {worker.pid}: DB pool initialised.",
-        flush=True,
-    )
+    print(f"[gunicorn] Worker {worker.pid}: ready.", flush=True)
+
+
+def worker_exit(server, worker):
+    """Worker process exiting: close DB pool cleanly."""
+    try:
+        from server.database import db
+        db.close()
+    except Exception:
+        pass

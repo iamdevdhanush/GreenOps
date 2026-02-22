@@ -1,302 +1,948 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GreenOps — Infrastructure Control</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GreenOps — Infrastructure Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#080e0b;--bg-base:#0c1410;--bg-surface:#101a14;--bg-card:#131f18;
+  --bg-elevated:#1c2e21;--bg-input:#0f1a12;
+  --border:rgba(255,255,255,.055);--border-hover:rgba(255,255,255,.10);
+  --border-accent:rgba(52,211,107,.25);
+  --green:#34d36b;--green-dim:#22a352;
+  --green-glow:rgba(52,211,107,.15);--green-glow-sm:rgba(52,211,107,.08);
+  --online:#34d36b;--online-bg:rgba(52,211,107,.10);
+  --idle:#f59e0b;--idle-bg:rgba(245,158,11,.10);
+  --offline:#f87171;--offline-bg:rgba(248,113,113,.10);
+  --text-primary:#e8f5eb;--text-secondary:#8aac92;
+  --text-muted:#4d6854;--text-faint:#2d4035;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.6);
+  --shadow-glow:0 0 24px rgba(52,211,107,.12);
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;--r-2xl:24px;
+  --t-fast:.15s cubic-bezier(.4,0,.2,1);--t-smooth:.25s cubic-bezier(.4,0,.2,1)
+}
+html{font-size:14px}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);
+  color:var(--text-primary);min-height:100vh;-webkit-font-smoothing:antialiased;overflow:hidden}
+.screen{display:none;width:100%;height:100vh}
+.screen.active{display:flex}
+
+/* ── LOGIN ── */
+#login-screen,#change-pw-screen{align-items:center;justify-content:center;
+  position:relative;overflow:hidden;background:var(--bg-deep)}
+.login-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.login-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(52,211,107,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(52,211,107,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%)}
+.login-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35}
+.login-orb-1{width:500px;height:500px;
+  background:radial-gradient(circle,rgba(52,211,107,.3),transparent 70%);
+  top:-150px;left:-100px;animation:orbFloat 8s ease-in-out infinite alternate}
+.login-orb-2{width:400px;height:400px;
+  background:radial-gradient(circle,rgba(34,163,82,.2),transparent 70%);
+  bottom:-100px;right:-80px;animation:orbFloat 10s ease-in-out infinite alternate-reverse}
+@keyframes orbFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,20px) scale(1.05)}}
+
+.auth-wrap{position:relative;z-index:2;width:100%;max-width:400px;padding:24px}
+.auth-card{background:rgba(19,31,24,.85);border:1px solid var(--border);
+  border-radius:var(--r-2xl);padding:36px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:var(--shadow-lg),0 0 60px rgba(0,0,0,.4);
+  animation:cardIn .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;
+  font-size:15px;font-weight:600;color:var(--text-primary)}
+.logo-mark{width:32px;height:32px;
+  background:linear-gradient(135deg,var(--green-dim),var(--green));
+  border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;
+  color:#fff;box-shadow:0 2px 12px rgba(52,211,107,.3);flex-shrink:0}
+.auth-title{font-size:22px;font-weight:700;color:var(--text-primary);
+  margin-bottom:6px;letter-spacing:-.3px}
+.auth-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;line-height:1.5}
+.pw-badge{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);
+  color:var(--idle);font-size:11.5px;font-weight:500;padding:5px 10px;
+  border-radius:999px;margin-bottom:16px}
+.field-group{margin-bottom:16px}
+.field-label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);
+  margin-bottom:6px;letter-spacing:.02em}
+.field-wrap{position:relative}
+.field-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;color:var(--text-muted);pointer-events:none}
+.field-wrap input{width:100%;padding:10px 14px 10px 36px;background:var(--bg-input);
+  border:1px solid var(--border);border-radius:var(--r-md);color:var(--text-primary);
+  font-family:inherit;font-size:13.5px;transition:border-color var(--t-fast),box-shadow var(--t-fast);
+  outline:none}
+.field-wrap input::placeholder{color:var(--text-faint)}
+.field-wrap input:focus{border-color:var(--border-accent);box-shadow:0 0 0 3px var(--green-glow-sm)}
+.form-error{display:flex;align-items:center;gap:8px;
+  background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);
+  border-radius:var(--r-sm);padding:10px 12px;color:var(--offline);
+  font-size:12.5px;margin-bottom:16px}
+.hidden{display:none!important}
+.btn-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(135deg,#22a352 0%,#34d36b 100%);border:none;
+  border-radius:var(--r-md);padding:12px 20px;color:#fff;font-family:inherit;
+  font-size:14px;font-weight:600;cursor:pointer;transition:all var(--t-smooth);
+  position:relative;overflow:hidden;letter-spacing:.01em}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(52,211,107,.3)}
+.btn-submit:active{transform:translateY(0)}
+.btn-submit:disabled{opacity:.55;pointer-events:none}
+.spin{animation:spinAnim .8s linear infinite}
+@keyframes spinAnim{to{transform:rotate(360deg)}}
+.auth-footer{text-align:center;font-size:11.5px;color:var(--text-faint);margin-top:20px}
+
+/* ── DASHBOARD ── */
+#dashboard-screen{background:var(--bg-base);overflow:hidden}
+.sidebar{width:228px;flex-shrink:0;background:var(--bg-surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  height:100vh;overflow:hidden}
+.sidebar-header{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo{display:flex;align-items:center;gap:9px;font-size:14.5px;
+  font-weight:600;color:var(--text-primary);letter-spacing:-.1px}
+.sidebar-nav{flex:1;padding:16px 10px;overflow-y:auto}
+.nav-section-label{font-size:10.5px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-faint);padding:0 8px;
+  margin-bottom:4px;margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;
+  border-radius:var(--r-sm);color:var(--text-muted);text-decoration:none;
+  font-size:13.5px;font-weight:450;transition:all var(--t-fast);
+  cursor:pointer;margin-bottom:1px;border:1px solid transparent}
+.nav-item:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.nav-item.active{background:var(--green-glow);color:var(--green);border-color:var(--border-accent)}
+.sidebar-footer{padding:14px 12px;border-top:1px solid var(--border)}
+.sidebar-user-row{display:flex;align-items:center;gap:10px}
+.user-avatar{width:30px;height:30px;
+  background:linear-gradient(135deg,var(--green-dim),var(--green));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:13px;font-weight:500;color:var(--text-primary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:var(--text-muted)}
+.logout-btn{width:28px;height:28px;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:transparent;color:var(--text-muted);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:all var(--t-fast);flex-shrink:0}
+.logout-btn:hover{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--offline)}
+
+.main-content{flex:1;display:flex;flex-direction:column;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--bg-elevated) transparent}
+.main-content::-webkit-scrollbar{width:5px}
+.main-content::-webkit-scrollbar-thumb{background:var(--bg-elevated);border-radius:99px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;border-bottom:1px solid var(--border);
+  background:var(--bg-surface);flex-shrink:0;position:sticky;top:0;z-index:10}
+.page-title{font-size:17px;font-weight:650;color:var(--text-primary);
+  letter-spacing:-.25px;margin-bottom:3px}
+.breadcrumb{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted)}
+.breadcrumb-current{color:var(--green)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.refresh-status{display:flex;align-items:center;gap:6px;background:var(--bg-elevated);
+  border:1px solid var(--border);border-radius:999px;padding:5px 12px;
+  font-size:12px;color:var(--text-secondary)}
+.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.btn-icon-only{width:34px;height:34px;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-secondary);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:all var(--t-fast)}
+.btn-icon-only:hover{border-color:var(--border-hover);color:var(--text-primary);background:var(--bg-card)}
+.btn-icon-only.spinning svg{animation:spinAnim .7s linear infinite}
+
+.stats-row{display:flex;gap:14px;padding:24px 28px 0;flex-shrink:0}
+.stat-card{flex:1;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:18px 20px 14px;position:relative;
+  overflow:hidden;transition:all var(--t-smooth);cursor:default}
+.stat-card:hover{border-color:var(--border-hover);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card-inner{display:flex;align-items:center;gap:14px}
+.stat-icon-wrap{width:38px;height:38px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon-neutral{background:rgba(138,172,146,.1);color:var(--text-secondary)}
+.stat-icon-online{background:var(--online-bg);color:var(--online)}
+.stat-icon-idle{background:var(--idle-bg);color:var(--idle)}
+.stat-icon-offline{background:var(--offline-bg);color:var(--offline)}
+.stat-icon-energy{background:rgba(52,211,107,.08);color:var(--green)}
+.stat-value{font-size:26px;font-weight:700;color:var(--text-primary);
+  letter-spacing:-.5px;line-height:1;font-family:'DM Mono',monospace}
+.stat-value.stat-online{color:var(--online)}
+.stat-value.stat-idle{color:var(--idle)}
+.stat-value.stat-offline{color:var(--offline)}
+.stat-label{font-size:11.5px;color:var(--text-muted);margin-top:3px;font-weight:450}
+.stat-bar{position:absolute;bottom:0;left:0;height:2px;border-radius:0 2px 2px 0;
+  transition:width .8s cubic-bezier(.4,0,.2,1)}
+.stat-bar-online{background:var(--online)}
+.stat-bar-idle{background:var(--idle)}
+.stat-bar-offline{background:var(--offline)}
+.stat-card-energy{flex:1.3}
+.stat-sub{font-size:11px;color:var(--text-muted);margin-top:10px;margin-left:52px;font-family:'DM Mono',monospace}
+
+.controls-row{display:flex;align-items:center;gap:12px;padding:20px 28px 0}
+.search-wrap{flex:1;position:relative}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;color:var(--text-muted);pointer-events:none}
+.search-input{width:100%;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:9px 14px 9px 36px;color:var(--text-primary);
+  font-family:inherit;font-size:13px;outline:none;
+  transition:border-color var(--t-fast),box-shadow var(--t-fast)}
+.search-input::placeholder{color:var(--text-faint)}
+.search-input:focus{border-color:var(--border-accent);box-shadow:0 0 0 3px var(--green-glow-sm)}
+.filter-pills{display:flex;gap:6px}
+.pill{padding:7px 14px;border-radius:999px;border:1px solid var(--border);
+  background:var(--bg-card);color:var(--text-muted);font-family:inherit;
+  font-size:12.5px;font-weight:500;cursor:pointer;transition:all var(--t-fast);white-space:nowrap}
+.pill:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.pill.active{background:var(--green-glow);border-color:var(--border-accent);color:var(--green)}
+
+.machine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px;padding:16px 28px 32px}
+
+.machine-card{background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;
+  gap:14px;transition:all var(--t-smooth);animation:fadeUp .4s cubic-bezier(.16,1,.3,1) both;
+  position:relative;overflow:hidden}
+.machine-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(52,211,107,.15),transparent);
+  opacity:0;transition:opacity var(--t-smooth)}
+.machine-card:hover{border-color:var(--border-hover);transform:translateY(-3px);
+  box-shadow:var(--shadow-md),var(--shadow-glow)}
+.machine-card:hover::before{opacity:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.machine-card.status-online{border-top:2px solid var(--online)}
+.machine-card.status-idle{border-top:2px solid var(--idle)}
+.machine-card.status-offline{border-top:2px solid rgba(248,113,113,.35)}
+
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.card-title{font-size:14.5px;font-weight:600;color:var(--text-primary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px}
+.card-os{font-size:11.5px;color:var(--text-muted);margin-top:2px}
+.card-mac{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text-faint);
+  margin-top:1px;letter-spacing:.04em}
+
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+  border-radius:999px;font-size:11px;font-weight:600;flex-shrink:0;
+  white-space:nowrap;letter-spacing:.02em}
+.badge-online{background:var(--online-bg);color:var(--online);border:1px solid rgba(52,211,107,.2)}
+.badge-idle{background:var(--idle-bg);color:var(--idle);border:1px solid rgba(245,158,11,.2)}
+.badge-offline{background:var(--offline-bg);color:var(--offline);border:1px solid rgba(248,113,113,.2)}
+.status-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.online-dot{background:var(--online);box-shadow:0 0 5px var(--online);animation:pulse 2s infinite}
+.idle-dot{background:var(--idle);box-shadow:0 0 5px var(--idle);animation:pulse 3s infinite}
+.offline-dot{background:var(--offline)}
+
+.card-metrics{display:flex;background:var(--bg-surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);overflow:hidden}
+.metric{flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:10px 8px;position:relative}
+.metric+.metric::before{content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:1px;background:var(--border)}
+.metric-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
+  color:var(--text-primary);letter-spacing:-.3px}
+.metric-lbl{font-size:10px;color:var(--text-muted);margin-top:2px;
+  text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+
+.card-last-seen{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-muted)}
+
+.card-actions{display:flex;gap:8px}
+.action-btn{flex:1;display:flex;align-items:center;justify-content:center;
+  gap:6px;padding:8px 10px;border-radius:var(--r-sm);border:1px solid transparent;
+  font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;
+  transition:all var(--t-fast);position:relative;overflow:hidden}
+.action-btn:active{transform:scale(.97)}
+.action-btn:disabled{opacity:.28;pointer-events:none}
+.btn-sleep{background:rgba(14,165,233,.1);border-color:rgba(14,165,233,.2);color:#38bdf8}
+.btn-sleep:hover{background:rgba(14,165,233,.18);border-color:rgba(14,165,233,.4);
+  box-shadow:0 4px 14px rgba(14,165,233,.2)}
+.btn-shutdown{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.2);color:var(--offline)}
+.btn-shutdown:hover{background:rgba(248,113,113,.16);border-color:rgba(248,113,113,.4);
+  box-shadow:0 4px 14px rgba(248,113,113,.2)}
+.action-btn.loading{opacity:.6;pointer-events:none}
+
+.empty-state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 20px;text-align:center;color:var(--text-muted)}
+.empty-state-icon{width:48px;height:48px;background:var(--bg-elevated);
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.empty-state h3{font-size:14px;font-weight:500;color:var(--text-secondary);margin-bottom:4px}
+.empty-state p{font-size:12.5px;color:var(--text-muted)}
+
+.skeleton-card{background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px;height:220px;position:relative;overflow:hidden}
+.skeleton-card::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.03) 50%,transparent 100%);
+  animation:shimmer 1.5s ease-in-out infinite}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;
+  border-radius:var(--r-md);font-size:13px;font-weight:450;max-width:340px;
+  backdrop-filter:blur(12px);pointer-events:all;
+  animation:toastIn .3s cubic-bezier(.16,1,.3,1) both;box-shadow:var(--shadow-lg)}
+.toast-ok{background:rgba(13,26,18,.95);border:1px solid rgba(52,211,107,.3);color:#7ee8a2}
+.toast-err{background:rgba(26,13,13,.95);border:1px solid rgba(248,113,113,.3);color:#fca5a5}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px) scale(.96)}}
+.toast-leaving{animation:toastOut .2s ease forwards}
+
+*{scrollbar-width:thin;scrollbar-color:var(--bg-elevated) transparent}
+*::-webkit-scrollbar{width:5px}
+*::-webkit-scrollbar-thumb{background:var(--bg-elevated);border-radius:99px}
+
+@media(max-width:1100px){.stats-row{flex-wrap:wrap}.stat-card{min-width:calc(50% - 7px)}}
+@media(max-width:768px){.sidebar{display:none}.stats-row{flex-direction:column;padding:16px 16px 0}
+  .controls-row{padding:12px 16px 0;flex-direction:column;align-items:stretch}
+  .machine-grid{padding:12px 16px 24px}.topbar{padding:14px 16px}}
+
+/* SVG icon inline shim — used for field icons and nav without lucide */
+.icon{display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;color:inherit;vertical-align:middle}
+</style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ── LOGIN ── -->
-  <div id="login-screen" class="screen active">
-    <div class="login-bg">
-      <div class="login-orb login-orb-1"></div>
-      <div class="login-orb login-orb-2"></div>
-      <div class="login-grid"></div>
-    </div>
-    <div class="auth-wrap">
-      <div class="auth-card">
-        <div class="auth-logo">
-          <div class="logo-mark">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity="0.15"/>
-              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity="0.4"/>
-            </svg>
-          </div>
-          <span class="logo-text">GreenOps</span>
+<!-- ── LOGIN ── -->
+<div id="login-screen" class="screen active">
+  <div class="login-bg">
+    <div class="login-orb login-orb-1"></div>
+    <div class="login-orb login-orb-2"></div>
+    <div class="login-grid"></div>
+  </div>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity=".15"/>
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+          </svg>
         </div>
-        <h1 class="auth-title">Welcome back</h1>
-        <p class="auth-sub">Sign in to your infrastructure dashboard</p>
-        <form id="login-form" autocomplete="off">
-          <div class="field-group">
-            <label class="field-label">Username</label>
-            <div class="field-wrap">
-              <i data-lucide="user" class="field-icon"></i>
-              <input id="username" type="text" placeholder="admin" autocomplete="username" required />
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Password</label>
-            <div class="field-wrap">
-              <i data-lucide="lock" class="field-icon"></i>
-              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
-            </div>
-          </div>
-          <div id="login-error" class="form-error hidden">
-            <i data-lucide="alert-circle"></i>
-            <span id="login-error-text"></span>
-          </div>
-          <button type="submit" class="btn-submit" id="login-btn">
-            <span class="btn-text">Sign In</span>
-            <span class="btn-spinner hidden">
-              <svg class="spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/>
-              </svg>
-            </span>
-            <i data-lucide="arrow-right" class="btn-icon"></i>
-          </button>
-        </form>
-        <p class="auth-footer">GreenOps v2.0 &mdash; Green IT Monitoring</p>
+        <span>GreenOps</span>
       </div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Sign in to your infrastructure dashboard</p>
+      <form id="login-form" autocomplete="off">
+        <div class="field-group">
+          <label class="field-label">Username</label>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <input id="username" type="text" placeholder="admin" autocomplete="username" required/>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required/>
+          </div>
+        </div>
+        <div id="login-error" class="form-error hidden">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="login-error-text"></span>
+        </div>
+        <button type="submit" class="btn-submit" id="login-btn">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-spinner hidden">
+            <svg class="spin" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/></svg>
+          </span>
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+      <p class="auth-footer">GreenOps v2.0 &mdash; Green IT Monitoring</p>
     </div>
   </div>
-
-  <!-- ── CHANGE PASSWORD ── -->
-  <div id="change-pw-screen" class="screen">
-    <div class="login-bg">
-      <div class="login-orb login-orb-1"></div>
-      <div class="login-orb login-orb-2"></div>
-    </div>
-    <div class="auth-wrap">
-      <div class="auth-card">
-        <div class="auth-logo">
-          <div class="logo-mark">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity="0.15"/>
-              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity="0.4"/>
-            </svg>
-          </div>
-          <span class="logo-text">GreenOps</span>
-        </div>
-        <div class="pw-badge">
-          <i data-lucide="shield-alert"></i>
-          Security Update Required
-        </div>
-        <h1 class="auth-title">Set new password</h1>
-        <p class="auth-sub">Your account requires a password change before continuing.</p>
-        <form id="change-pw-form">
-          <div class="field-group">
-            <label class="field-label">Current Password</label>
-            <div class="field-wrap">
-              <i data-lucide="lock" class="field-icon"></i>
-              <input id="cur-pw" type="password" placeholder="Current password" required />
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">New Password</label>
-            <div class="field-wrap">
-              <i data-lucide="key" class="field-icon"></i>
-              <input id="new-pw" type="password" placeholder="Min. 8 characters" required />
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Confirm New Password</label>
-            <div class="field-wrap">
-              <i data-lucide="check-circle" class="field-icon"></i>
-              <input id="confirm-pw" type="password" placeholder="Repeat new password" required />
-            </div>
-          </div>
-          <div id="change-pw-error" class="form-error hidden">
-            <i data-lucide="alert-circle"></i>
-            <span id="change-pw-error-text"></span>
-          </div>
-          <button type="submit" class="btn-submit">
-            <span class="btn-text">Update Password</span>
-            <span class="btn-spinner hidden">
-              <svg class="spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/>
-              </svg>
-            </span>
-            <i data-lucide="arrow-right" class="btn-icon"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── DASHBOARD ── -->
-  <div id="dashboard-screen" class="screen">
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <div class="logo-mark">
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity="0.15"/>
-              <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity="0.4"/>
-            </svg>
-          </div>
-          <span>GreenOps</span>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav">
-        <div class="nav-section-label">Monitoring</div>
-        <a class="nav-item active" href="#">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
-        </a>
-        <a class="nav-item" href="#">
-          <i data-lucide="monitor"></i>
-          <span>Machines</span>
-        </a>
-        <a class="nav-item" href="#">
-          <i data-lucide="zap"></i>
-          <span>Energy</span>
-        </a>
-
-        <div class="nav-section-label" style="margin-top:24px">System</div>
-        <a class="nav-item" href="#">
-          <i data-lucide="settings"></i>
-          <span>Settings</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="sidebar-user-row">
-          <div class="user-avatar">
-            <span id="sidebar-user-initial">A</span>
-          </div>
-          <div class="user-info">
-            <div class="user-name" id="sidebar-user">admin</div>
-            <div class="user-role">Administrator</div>
-          </div>
-          <button id="logout-btn" class="logout-btn" title="Sign out">
-            <i data-lucide="log-out"></i>
-          </button>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <!-- Topbar -->
-      <header class="topbar">
-        <div class="topbar-left">
-          <h1 class="page-title">Infrastructure Overview</h1>
-          <div class="breadcrumb">
-            <span>GreenOps</span>
-            <i data-lucide="chevron-right" style="width:14px;height:14px;opacity:.4"></i>
-            <span class="breadcrumb-current">Dashboard</span>
-          </div>
-        </div>
-        <div class="topbar-right">
-          <div class="refresh-status" id="refresh-status">
-            <span class="refresh-dot"></span>
-            <span class="refresh-label">Live</span>
-          </div>
-          <button id="refresh-btn" class="btn-icon-only" title="Refresh now">
-            <i data-lucide="refresh-cw"></i>
-          </button>
-        </div>
-      </header>
-
-      <!-- Stats Row -->
-      <section class="stats-row">
-        <div class="stat-card">
-          <div class="stat-card-inner">
-            <div class="stat-icon-wrap stat-icon-neutral">
-              <i data-lucide="server"></i>
-            </div>
-            <div class="stat-data">
-              <div class="stat-value" id="stat-total">—</div>
-              <div class="stat-label">Total Machines</div>
-            </div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-inner">
-            <div class="stat-icon-wrap stat-icon-online">
-              <i data-lucide="wifi"></i>
-            </div>
-            <div class="stat-data">
-              <div class="stat-value stat-online" id="stat-online">—</div>
-              <div class="stat-label">Online</div>
-            </div>
-          </div>
-          <div class="stat-bar stat-bar-online" id="bar-online" style="width:0%"></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-inner">
-            <div class="stat-icon-wrap stat-icon-idle">
-              <i data-lucide="coffee"></i>
-            </div>
-            <div class="stat-data">
-              <div class="stat-value stat-idle" id="stat-idle">—</div>
-              <div class="stat-label">Idle</div>
-            </div>
-          </div>
-          <div class="stat-bar stat-bar-idle" id="bar-idle" style="width:0%"></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-inner">
-            <div class="stat-icon-wrap stat-icon-offline">
-              <i data-lucide="wifi-off"></i>
-            </div>
-            <div class="stat-data">
-              <div class="stat-value stat-offline" id="stat-offline">—</div>
-              <div class="stat-label">Offline</div>
-            </div>
-          </div>
-          <div class="stat-bar stat-bar-offline" id="bar-offline" style="width:0%"></div>
-        </div>
-        <div class="stat-card stat-card-energy">
-          <div class="stat-card-inner">
-            <div class="stat-icon-wrap stat-icon-energy">
-              <i data-lucide="zap"></i>
-            </div>
-            <div class="stat-data">
-              <div class="stat-value" id="stat-energy">—</div>
-              <div class="stat-label">Energy Wasted</div>
-            </div>
-          </div>
-          <div class="stat-sub" id="stat-cost">— cost</div>
-        </div>
-      </section>
-
-      <!-- Controls -->
-      <div class="controls-row">
-        <div class="search-wrap">
-          <i data-lucide="search" class="search-icon"></i>
-          <input id="search-input" type="text" placeholder="Search machines, OS, MAC address…" class="search-input" />
-        </div>
-        <div class="filter-pills">
-          <button class="pill active" data-status="">All</button>
-          <button class="pill" data-status="online">Online</button>
-          <button class="pill" data-status="idle">Idle</button>
-          <button class="pill" data-status="offline">Offline</button>
-        </div>
-      </div>
-
-      <!-- Machine Grid -->
-      <section id="machine-grid" class="machine-grid">
-        <!-- populated by JS -->
-      </section>
-    </main>
-  </div>
-
 </div>
 
-<!-- Toast container -->
+<!-- ── CHANGE PASSWORD ── -->
+<div id="change-pw-screen" class="screen">
+  <div class="login-bg">
+    <div class="login-orb login-orb-1"></div>
+    <div class="login-orb login-orb-2"></div>
+  </div>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity=".15"/>
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+          </svg>
+        </div>
+        <span>GreenOps</span>
+      </div>
+      <div class="pw-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Security Update Required
+      </div>
+      <h1 class="auth-title">Set new password</h1>
+      <p class="auth-sub">Your account requires a password change before continuing.</p>
+      <form id="change-pw-form">
+        <div class="field-group">
+          <label class="field-label">Current Password</label>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input id="cur-pw" type="password" placeholder="Current password" required/>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">New Password</label>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            <input id="new-pw" type="password" placeholder="Min. 8 characters" required/>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Confirm New Password</label>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="20 6 9 17 4 12"/></svg>
+            <input id="confirm-pw" type="password" placeholder="Repeat new password" required/>
+          </div>
+        </div>
+        <div id="change-pw-error" class="form-error hidden">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="change-pw-error-text"></span>
+        </div>
+        <button type="submit" class="btn-submit">
+          <span class="btn-text">Update Password</span>
+          <span class="btn-spinner hidden">
+            <svg class="spin" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/></svg>
+          </span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard-screen" class="screen">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-mark">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="currentColor" opacity=".15"/>
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+          </svg>
+        </div>
+        <span>GreenOps</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Monitoring</div>
+      <a class="nav-item active" href="#">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Machines
+      </a>
+      <a class="nav-item" href="#">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Energy
+      </a>
+      <div class="nav-section-label" style="margin-top:20px">System</div>
+      <a class="nav-item" href="#">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user-row">
+        <div class="user-avatar"><span id="sidebar-user-initial">A</span></div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-user">admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+        <button id="logout-btn" class="logout-btn" title="Sign out">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">Infrastructure Overview</h1>
+        <div class="breadcrumb">
+          <span>GreenOps</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.4"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="breadcrumb-current">Dashboard</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="refresh-status">
+          <span class="refresh-dot"></span>
+          <span>Live</span>
+        </div>
+        <button id="refresh-btn" class="btn-icon-only" title="Refresh now">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-inner">
+          <div class="stat-icon-wrap stat-icon-neutral">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          </div>
+          <div class="stat-data">
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-label">Total Machines</div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-inner">
+          <div class="stat-icon-wrap stat-icon-online">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          </div>
+          <div class="stat-data">
+            <div class="stat-value stat-online" id="stat-online">—</div>
+            <div class="stat-label">Online</div>
+          </div>
+        </div>
+        <div class="stat-bar stat-bar-online" id="bar-online" style="width:0%"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-inner">
+          <div class="stat-icon-wrap stat-icon-idle">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          </div>
+          <div class="stat-data">
+            <div class="stat-value stat-idle" id="stat-idle">—</div>
+            <div class="stat-label">Idle</div>
+          </div>
+        </div>
+        <div class="stat-bar stat-bar-idle" id="bar-idle" style="width:0%"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-inner">
+          <div class="stat-icon-wrap stat-icon-offline">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          </div>
+          <div class="stat-data">
+            <div class="stat-value stat-offline" id="stat-offline">—</div>
+            <div class="stat-label">Offline</div>
+          </div>
+        </div>
+        <div class="stat-bar stat-bar-offline" id="bar-offline" style="width:0%"></div>
+      </div>
+      <div class="stat-card stat-card-energy">
+        <div class="stat-card-inner">
+          <div class="stat-icon-wrap stat-icon-energy">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="stat-data">
+            <div class="stat-value" id="stat-energy">—</div>
+            <div class="stat-label">Energy Wasted</div>
+          </div>
+        </div>
+        <div class="stat-sub" id="stat-cost">— cost</div>
+      </div>
+    </section>
+
+    <div class="controls-row">
+      <div class="search-wrap">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search-input" type="text" placeholder="Search machines, OS, MAC address…" class="search-input"/>
+      </div>
+      <div class="filter-pills">
+        <button class="pill active" data-status="">All</button>
+        <button class="pill" data-status="online">Online</button>
+        <button class="pill" data-status="idle">Idle</button>
+        <button class="pill" data-status="offline">Offline</button>
+      </div>
+    </div>
+
+    <section id="machine-grid" class="machine-grid"></section>
+  </main>
+</div>
+</div>
+
 <div id="toast-container"></div>
 
-<script src="app.js"></script>
+<script>
+class GreenOpsApp {
+  constructor() {
+    this.apiUrl = '';
+    this.token = localStorage.getItem('greenops_token');
+    this.currentUser = localStorage.getItem('greenops_user');
+    this.machines = [];
+    this.filterStatus = '';
+    this.searchQuery = '';
+    this.refreshInterval = null;
+    this.REFRESH_MS = 10000;
+    this._init();
+  }
+
+  _init() {
+    this._bindLogin();
+    this._bindChangePw();
+    this._bindDashboard();
+    if (this.token) { this._verifyToken(); } else { this._showScreen('login'); }
+  }
+
+  _showScreen(name) {
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    const ids = { login:'login-screen', changepw:'change-pw-screen', dashboard:'dashboard-screen' };
+    document.getElementById(ids[name])?.classList.add('active');
+  }
+
+  _bindLogin() {
+    document.getElementById('login-form')?.addEventListener('submit', e => { e.preventDefault(); this._handleLogin(); });
+  }
+
+  async _handleLogin() {
+    const username = document.getElementById('username')?.value.trim() || '';
+    const password = document.getElementById('password')?.value || '';
+    const errorEl  = document.getElementById('login-error');
+    const errorTxt = document.getElementById('login-error-text');
+    const btn      = document.getElementById('login-btn');
+    if (!username || !password) return;
+
+    this._setBtnLoading(btn, true);
+    errorEl?.classList.add('hidden');
+
+    try {
+      const res  = await fetch(`${this.apiUrl}/api/auth/login`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        this.token = data.token;
+        this.currentUser = data.username || username;
+        localStorage.setItem('greenops_token', data.token);
+        localStorage.setItem('greenops_user', this.currentUser);
+        if (data.must_change_password) {
+          this._showScreen('changepw');
+          const el = document.getElementById('cur-pw');
+          if (el) el.value = password;
+        } else {
+          this._initDashboard();
+        }
+      } else {
+        if (errorTxt) errorTxt.textContent = data.error || 'Invalid credentials';
+        errorEl?.classList.remove('hidden');
+      }
+    } catch {
+      if (errorTxt) errorTxt.textContent = 'Cannot connect to server.';
+      errorEl?.classList.remove('hidden');
+    } finally {
+      this._setBtnLoading(btn, false);
+    }
+  }
+
+  _setBtnLoading(btn, on) {
+    if (!btn) return;
+    btn.disabled = on;
+    const text = btn.querySelector('.btn-text');
+    const spinner = btn.querySelector('.btn-spinner');
+    if (text) text.style.opacity = on ? '0.5' : '1';
+    if (spinner) spinner.classList.toggle('hidden', !on);
+  }
+
+  _bindChangePw() {
+    document.getElementById('change-pw-form')?.addEventListener('submit', e => { e.preventDefault(); this._handleChangePw(); });
+  }
+
+  async _handleChangePw() {
+    const curPw = document.getElementById('cur-pw')?.value || '';
+    const newPw = document.getElementById('new-pw')?.value || '';
+    const cnfPw = document.getElementById('confirm-pw')?.value || '';
+    const errEl = document.getElementById('change-pw-error');
+    const errTx = document.getElementById('change-pw-error-text');
+
+    errEl?.classList.add('hidden');
+    if (newPw !== cnfPw) { if(errTx) errTx.textContent = 'Passwords do not match.'; errEl?.classList.remove('hidden'); return; }
+    if (newPw.length < 8) { if(errTx) errTx.textContent = 'Min. 8 characters.'; errEl?.classList.remove('hidden'); return; }
+
+    try {
+      const res = await fetch(`${this.apiUrl}/api/auth/change-password`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${this.token}`},
+        body: JSON.stringify({ current_password: curPw, new_password: newPw })
+      });
+      if (res.ok) { this._toast('Password updated.', 'ok'); this._initDashboard(); }
+      else {
+        const d = await res.json().catch(() => ({}));
+        if(errTx) errTx.textContent = d.error || 'Failed.'; errEl?.classList.remove('hidden');
+      }
+    } catch { if(errTx) errTx.textContent = 'Cannot connect.'; errEl?.classList.remove('hidden'); }
+  }
+
+  async _verifyToken() {
+    try {
+      const res = await fetch(`${this.apiUrl}/api/auth/verify`, { headers:{'Authorization':`Bearer ${this.token}`} });
+      if (res.ok) { this._initDashboard(); } else { this._logout(); }
+    } catch { this._showScreen('login'); }
+  }
+
+  _initDashboard() {
+    this._showScreen('dashboard');
+    const uEl = document.getElementById('sidebar-user');
+    if (uEl) uEl.textContent = this.currentUser || 'admin';
+    const iEl = document.getElementById('sidebar-user-initial');
+    if (iEl) iEl.textContent = (this.currentUser || 'A')[0].toUpperCase();
+    this._showSkeletons();
+    this._loadDashboard();
+    this._startRefresh();
+  }
+
+  _bindDashboard() {
+    document.getElementById('logout-btn')?.addEventListener('click', () => this._logout());
+    document.getElementById('refresh-btn')?.addEventListener('click', () => {
+      const btn = document.getElementById('refresh-btn');
+      btn?.classList.add('spinning');
+      this._loadDashboard().finally(() => setTimeout(() => btn?.classList.remove('spinning'), 600));
+    });
+    document.getElementById('search-input')?.addEventListener('input', e => {
+      this.searchQuery = e.target.value.toLowerCase().trim();
+      this._renderMachines();
+    });
+    document.querySelectorAll('.pill').forEach(p => {
+      p.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+        p.classList.add('active');
+        this.filterStatus = p.dataset.status || '';
+        this._renderMachines();
+      });
+    });
+  }
+
+  _logout() {
+    this.token = null; this.currentUser = null;
+    localStorage.removeItem('greenops_token');
+    localStorage.removeItem('greenops_user');
+    this._stopRefresh();
+    this._showScreen('login');
+    const p = document.getElementById('password');
+    if (p) p.value = '';
+  }
+
+  async _loadDashboard() {
+    if (!this.token) return;
+    await Promise.allSettled([this._loadStats(), this._loadMachines()]);
+  }
+
+  async _loadStats() {
+    try {
+      const res = await fetch(`${this.apiUrl}/api/dashboard/stats`, { headers:{'Authorization':`Bearer ${this.token}`} });
+      if (!res.ok) { if (res.status === 401) { this._logout(); } return; }
+      const s = await res.json();
+      this._setText('stat-total',   s.total_machines   ?? '—');
+      this._setText('stat-online',  s.online_machines  ?? '—');
+      this._setText('stat-idle',    s.idle_machines    ?? '—');
+      this._setText('stat-offline', s.offline_machines ?? '—');
+      this._setText('stat-energy',  `${(s.total_energy_wasted_kwh||0).toFixed(3)} kWh`);
+      this._setText('stat-cost',    `$${(s.estimated_cost_usd||0).toFixed(2)} estimated cost`);
+      const t = s.total_machines || 1;
+      this._setW('bar-online',  ((s.online_machines  ||0)/t)*100);
+      this._setW('bar-idle',    ((s.idle_machines    ||0)/t)*100);
+      this._setW('bar-offline', ((s.offline_machines ||0)/t)*100);
+    } catch {}
+  }
+
+  async _loadMachines() {
+    try {
+      const res = await fetch(`${this.apiUrl}/api/machines`, { headers:{'Authorization':`Bearer ${this.token}`} });
+      if (!res.ok) { if (res.status === 401) { this._logout(); } return; }
+      const d = await res.json();
+      this.machines = Array.isArray(d.machines) ? d.machines : [];
+      this._renderMachines();
+    } catch {}
+  }
+
+  _showSkeletons() {
+    const g = document.getElementById('machine-grid');
+    if (g) g.innerHTML = Array.from({length:6}).map(() => '<div class="skeleton-card"></div>').join('');
+  }
+
+  _renderMachines() {
+    const grid = document.getElementById('machine-grid');
+    if (!grid) return;
+    let list = [...this.machines];
+    if (this.filterStatus) list = list.filter(m => m.status === this.filterStatus);
+    if (this.searchQuery) list = list.filter(m =>
+      (m.hostname||'').toLowerCase().includes(this.searchQuery) ||
+      (m.mac_address||'').toLowerCase().includes(this.searchQuery) ||
+      (m.os_type||'').toLowerCase().includes(this.searchQuery)
+    );
+
+    if (!list.length) {
+      grid.innerHTML = `<div class="empty-state">
+        <div class="empty-state-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <h3>No machines found</h3>
+        <p>${this.filterStatus||this.searchQuery ? 'Try adjusting your search or filter.' : 'No machines have registered yet.'}</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map((m, i) => this._cardHtml(m, i)).join('');
+
+    grid.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const {machineId, action} = btn.dataset;
+        if (machineId && action) this._sendCommand(parseInt(machineId, 10), action, btn);
+      });
+    });
+  }
+
+  _cardHtml(m, i) {
+    const badge = this._badgeHtml(m.status);
+    const last  = this._relTime(m.last_seen);
+    const up    = this._fmtUp(m.uptime_seconds ?? m.uptime_hours);
+    const idle  = this._fmtDur(m.total_idle_seconds || 0);
+    const kwh   = (m.energy_wasted_kwh || 0).toFixed(3);
+    const can   = m.status !== 'offline';
+    const delay = `animation-delay:${Math.min(i * .05, .4)}s`;
+    const sc    = `status-${m.status || 'offline'}`;
+
+    const moonIcon  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+    const powerIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>`;
+    const clockIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="opacity:.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+
+    return `<div class="machine-card ${sc}" style="${delay}">
+      <div class="card-head">
+        <div style="min-width:0;flex:1">
+          <div class="card-title" title="${this._e(m.hostname)}">${this._e(m.hostname||'Unknown')}</div>
+          <div class="card-os">${this._e(m.os_type||'—')}</div>
+          <div class="card-mac">${this._e(m.mac_address||'—')}</div>
+        </div>
+        ${badge}
+      </div>
+      <div class="card-metrics">
+        <div class="metric"><span class="metric-val">${this._e(up)}</span><span class="metric-lbl">Uptime</span></div>
+        <div class="metric"><span class="metric-val">${this._e(idle)}</span><span class="metric-lbl">Idle</span></div>
+        <div class="metric"><span class="metric-val">${this._e(kwh)}</span><span class="metric-lbl">kWh</span></div>
+      </div>
+      <div class="card-last-seen">${clockIcon}<span>Last seen ${this._e(last)}</span></div>
+      <div class="card-actions">
+        <button class="action-btn btn-sleep" data-action="sleep" data-machine-id="${m.id}" ${!can?'disabled':''}>
+          ${moonIcon} Sleep
+        </button>
+        <button class="action-btn btn-shutdown" data-action="shutdown" data-machine-id="${m.id}" ${!can?'disabled':''}>
+          ${powerIcon} Shutdown
+        </button>
+      </div>
+    </div>`;
+  }
+
+  _badgeHtml(status) {
+    const map = {
+      online:  ['badge-online',  'online-dot',  'Online'],
+      idle:    ['badge-idle',    'idle-dot',    'Idle'],
+      offline: ['badge-offline', 'offline-dot', 'Offline'],
+    };
+    const [cls, dot, label] = map[status] || map.offline;
+    return `<span class="status-badge ${cls}"><span class="status-dot ${dot}"></span>${label}</span>`;
+  }
+
+  async _sendCommand(machineId, action, btn) {
+    const label = action === 'sleep' ? 'Sleep' : 'Shutdown';
+    if (!confirm(`Send ${label} command?\n\nThe agent will execute this on its next heartbeat poll.`)) return;
+
+    const prev = btn.innerHTML;
+    btn.classList.add('loading'); btn.disabled = true;
+    btn.innerHTML = `<svg class="spin" width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="10"/></svg> Sending…`;
+
+    try {
+      const res = await fetch(`${this.apiUrl}/api/machines/${machineId}/${action}`, {
+        method:'POST', headers:{'Authorization':`Bearer ${this.token}`}
+      });
+      if (res.ok) {
+        this._toast(`${label} command queued.`, 'ok');
+        setTimeout(() => this._loadDashboard(), 3000);
+      } else {
+        const d = await res.json().catch(() => ({}));
+        this._toast(d.error || `Failed to send ${label}.`, 'err');
+      }
+    } catch { this._toast('Cannot connect to server.', 'err'); }
+    finally {
+      btn.classList.remove('loading');
+      btn.innerHTML = prev;
+      btn.disabled = false;
+    }
+  }
+
+  _startRefresh() {
+    this._stopRefresh();
+    this.refreshInterval = setInterval(() => this._loadDashboard(), this.REFRESH_MS);
+  }
+  _stopRefresh() {
+    if (this.refreshInterval) { clearInterval(this.refreshInterval); this.refreshInterval = null; }
+  }
+
+  _toast(msg, type='ok') {
+    const c = document.getElementById('toast-container');
+    if (!c) return;
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.textContent = msg;
+    c.appendChild(el);
+    const rm = () => { el.classList.add('toast-leaving'); setTimeout(() => el.remove(), 220); };
+    const t = setTimeout(rm, 3500);
+    el.addEventListener('click', () => { clearTimeout(t); rm(); });
+  }
+
+  _setText(id, v) { const el = document.getElementById(id); if(el) el.textContent = v; }
+  _setW(id, pct)  { const el = document.getElementById(id); if(el) el.style.width = `${Math.max(0,Math.min(100,pct))}%`; }
+  _e(t) { if(t==null) return ''; const d=document.createElement('div'); d.textContent=String(t); return d.innerHTML; }
+
+  _relTime(ts) {
+    if (!ts) return 'never';
+    const d = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+    if (isNaN(d)||d<0) return 'just now';
+    if (d<10)    return 'just now';
+    if (d<60)    return `${d}s ago`;
+    if (d<3600)  return `${Math.floor(d/60)}m ago`;
+    if (d<86400) return `${Math.floor(d/3600)}h ago`;
+    return `${Math.floor(d/86400)}d ago`;
+  }
+
+  _fmtUp(val) {
+    if (val==null||val==='') return '—';
+    let s = Number(val);
+    if (isNaN(s)) return '—';
+    if (s<1000 && String(val).includes('.') && s!==0) s = s*3600;
+    const h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+    if(h>0) return `${h}h ${m}m`;
+    if(m>0) return `${m}m`;
+    return `${Math.floor(s)}s`;
+  }
+
+  _fmtDur(secs) {
+    const s=Number(secs)||0;
+    if(!s) return '0m';
+    const h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+    return h>0 ? `${h}h ${m}m` : `${m}m`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => { window.app = new GreenOpsApp(); });
+</script>
 </body>
 </html>

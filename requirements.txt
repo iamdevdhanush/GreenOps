@@ -1,3 +1,5 @@
+# GreenOps Server Dependencies
+# Use psycopg2-binary (pre-compiled) — psycopg2 source requires libpq-dev headers.
 Flask==3.0.3
 flask-cors==4.0.1
 gunicorn==21.2.0
